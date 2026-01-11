@@ -1,0 +1,63 @@
+# Laravel
+/.phpunit.cache
+/node_modules
+/public/build
+/public/hot
+/public/storage
+/storage/*.key
+/vendor
+.env
+.env.backup
+.env.production
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+auth.json
+npm-debug.log
+yarn-error.log
+
+# IDE
+/.fleet
+/.idea
+/.vscode
+/.claude
+*.sublime-project
+*.sublime-workspace
+
+# Logs
+/storage/logs/*.log
+*.log
+
+# Database
+*.sqlite
+*.sqlite-journal
+/database/*.sqlite
+/database/*.sqlite-journal
+
+# OS Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Composer
+composer.phar
+
+# NPM / Yarn
+package-lock.json
+yarn.lock
+
+# Laravel Mix
+mix-manifest.json
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
+# PHPStorm
+.idea/
+
+# Deployment
+.deployer/
+deploy.php
