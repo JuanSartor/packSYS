@@ -2,63 +2,72 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PaperCoil;
 use Illuminate\Http\Request;
 
 class PaperCoilController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $paperCoils = PaperCoil::latest('id')->paginate(15);
+        return view('paper-coils.index', compact('paperCoils'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return view('paper-coils.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'tipo_papel' => ['required', 'string', 'max:50'],
+            'ancho' => ['required', 'numeric', 'min:0'],
+            'gramaje' => ['required', 'numeric', 'min:0'],
+            'peso_inicial' => ['required', 'numeric', 'min:0'],
+            'peso_actual' => ['required', 'numeric', 'min:0'],
+            'alerta_minima' => ['required', 'numeric', 'min:0'],
+        ]);
+
+        PaperCoil::create($validated);
+
+        return redirect()->route('paper-coils.index')
+            ->with('success', 'Bobina de papel creada exitosamente.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show(PaperCoil $paperCoil)
     {
-        //
+        $paperCoil->load('products');
+        return view('paper-coils.show', compact('paperCoil'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function edit(PaperCoil $paperCoil)
     {
-        //
+        return view('paper-coils.edit', compact('paperCoil'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, PaperCoil $paperCoil)
     {
-        //
+        $validated = $request->validate([
+            'tipo_papel' => ['required', 'string', 'max:50'],
+            'ancho' => ['required', 'numeric', 'min:0'],
+            'gramaje' => ['required', 'numeric', 'min:0'],
+            'peso_inicial' => ['required', 'numeric', 'min:0'],
+            'peso_actual' => ['required', 'numeric', 'min:0'],
+            'alerta_minima' => ['required', 'numeric', 'min:0'],
+        ]);
+
+        $paperCoil->update($validated);
+
+        return redirect()->route('paper-coils.index')
+            ->with('success', 'Bobina de papel actualizada exitosamente.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(PaperCoil $paperCoil)
     {
-        //
+        $paperCoil->delete();
+
+        return redirect()->route('paper-coils.index')
+            ->with('success', 'Bobina de papel eliminada exitosamente.');
     }
 }

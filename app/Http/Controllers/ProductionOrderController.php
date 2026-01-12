@@ -2,63 +2,131 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
+use App\Models\ProductionOrder;
 use Illuminate\Http\Request;
 
 class ProductionOrderController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $orders = ProductionOrder::with(['product', 'creator'])
+            ->latest('id')
+            ->paginate(15);
+
+        return view('production-orders.index', compact('orders'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        $products = Product::orderBy('name')->get();
+        return view('production-orders.create', compact('products'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'product_id' => ['required', 'exists:products,id'],
+            'cantidad' => ['required', 'numeric', 'min:0.01'],
+            'estado' => ['required', 'in:espera,pendiente,produccion,pausada,finalizada'],
+        ]);
+
+        $validated['created_by'] = auth()->id();
+
+        ProductionOrder::create($validated);
+
+        return redirect()->route('production-orders.index')
+            ->with('success', 'Orden de producción creada exitosamente.');
+    }
+
+    public function show(ProductionOrder $productionOrder)
+    {
+        $productionOrder->load(['product', 'creator', 'productionTimes']);
+        return view('production-orders.show', compact('productionOrder'));
+    }
+
+    public function edit(ProductionOrder $productionOrder)
+    {
+        $products = Product::orderBy('name')->get();
+        return view('production-orders.edit', compact('productionOrder', 'products'));
+    }
+
+    public function update(Request $request, ProductionOrder $productionOrder)
+    {
+        $validated = $request->validate([
+            'product_id' => ['required', 'exists:products,id'],
+            'cantidad' => ['required', 'numeric', 'min:0.01'],
+            'estado' => ['required', 'in:espera,pendiente,produccion,pausada,finalizada'],
+        ]);
+
+        $productionOrder->update($validated);
+
+        return redirect()->route('production-orders.index')
+            ->with('success', 'Orden de producción actualizada exitosamente.');
+    }
+
+    public function destroy(ProductionOrder $productionOrder)
+    {
+        $productionOrder->delete();
+
+        return redirect()->route('production-orders.index')
+            ->with('success', 'Orden de producción eliminada exitosamente.');
     }
 
     /**
-     * Display the specified resource.
+     * Iniciar producción
      */
-    public function show(string $id)
+    public function start(ProductionOrder $productionOrder)
     {
-        //
+        if ($productionOrder->estado !== 'produccion') {
+            $productionOrder->update([
+                'estado' => 'produccion',
+                'started_at' => now(),
+            ]);
+
+            return redirect()->route('production-orders.show', $productionOrder)
+                ->with('success', 'Orden iniciada exitosamente.');
+        }
+
+        return redirect()->route('production-orders.show', $productionOrder)
+            ->with('error', 'La orden ya está en producción.');
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Pausar producción
      */
-    public function edit(string $id)
+    public function pause(ProductionOrder $productionOrder)
     {
-        //
+        if ($productionOrder->estado === 'produccion') {
+            $productionOrder->update(['estado' => 'pausada']);
+
+            return redirect()->route('production-orders.show', $productionOrder)
+                ->with('success', 'Orden pausada exitosamente.');
+        }
+
+        return redirect()->route('production-orders.show', $productionOrder)
+            ->with('error', 'La orden no está en producción.');
     }
 
     /**
-     * Update the specified resource in storage.
+     * Finalizar producción
      */
-    public function update(Request $request, string $id)
+    public function finish(ProductionOrder $productionOrder)
     {
-        //
-    }
+        if (in_array($productionOrder->estado, ['produccion', 'pausada'])) {
+            $productionOrder->update([
+                'estado' => 'finalizada',
+                'finished_at' => now(),
+            ]);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+            // Incrementar stock del producto
+            $productionOrder->product->increment('stock_actual', $productionOrder->cantidad);
+
+            return redirect()->route('production-orders.show', $productionOrder)
+                ->with('success', 'Orden finalizada exitosamente. Stock actualizado.');
+        }
+
+        return redirect()->route('production-orders.show', $productionOrder)
+            ->with('error', 'La orden no puede ser finalizada en su estado actual.');
     }
 }

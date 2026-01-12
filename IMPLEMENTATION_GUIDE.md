@@ -36,122 +36,42 @@
 ### 5. Vistas Creadas
 - ✅ Dashboard con estadísticas
 - ✅ Layout de autenticación (Breeze)
+- ✅ **Navegación completa con links basados en roles** (resources/views/layouts/navigation.blade.php)
+- ✅ **Vistas de Usuarios completas** (resources/views/users/):
+  - index.blade.php - Lista con paginación y badges de roles
+  - create.blade.php - Formulario con validación
+  - edit.blade.php - Edición con password opcional
+  - show.blade.php - Detalles con historial de ventas/órdenes
+- ✅ **Vistas de Clientes completas** (resources/views/clients/):
+  - index.blade.php - Lista con paginación
+  - create.blade.php - Formulario completo
+  - edit.blade.php - Edición de datos
+  - show.blade.php - Detalles con historial de ventas
+- ✅ **Vistas de Productos completas** (resources/views/products/):
+  - index.blade.php - Lista con alertas de stock bajo (fondo rojo)
+  - create.blade.php - Formulario con tipos y unidades
+  - edit.blade.php - Edición completa
+  - show.blade.php - Detalles con historial de precios y movimientos
+- ✅ **Vistas de Transportes completas** (resources/views/transports/):
+  - index.blade.php - Lista simple
+  - create.blade.php - Formulario básico
+  - edit.blade.php - Edición
+
+### 6. GitIgnore Actualizado
+- ✅ Configurado para excluir node_modules, vendor, .env, archivos IDE
+- ✅ Excluye archivos temporales y de sistema operativo
+- ✅ Proyecto listo para subir a repositorio
 
 ---
 
 ## ⏳ LO QUE FALTA POR IMPLEMENTAR
 
-### Vistas Principales a Crear
+### Vistas Principales Pendientes
 
-#### 1. Navegación Mejorada (PRIORIDAD ALTA)
-**Archivo**: `resources/views/layouts/navigation.blade.php`
-
-Actualizar la navegación con los siguientes items (según rol):
-
-```blade
-<!-- Todos los roles -->
-- Dashboard
-- Productos (Ver)
-
-<!-- Solo Gestor -->
-- Usuarios
-- Productos (CRUD completo)
-- Transportes
-- Clientes
-
-<!-- Gestor y Vendedor -->
-- Clientes
-- Ventas
-
-<!-- Gestor y Operario -->
-- Bobinas de Papel
-- Órdenes de Producción
-```
-
-#### 2. Vistas de Usuarios
-**Directorio**: `resources/views/users/`
-
-**index.blade.php** - Lista de usuarios
-```blade
-<x-app-layout>
-    <!-- Tabla con: ID, Nombre, Email, Rol, Acciones -->
-    <!-- Botón "Nuevo Usuario" -->
-    <!-- Paginación -->
-</x-app-layout>
-```
-
-**create.blade.php** - Formulario crear usuario
-```blade
-<x-app-layout>
-    <!-- Formulario con: nombre, email, password, role (select) -->
-</x-app-layout>
-```
-
-**edit.blade.php** - Formulario editar usuario
-```blade
-<x-app-layout>
-    <!-- Formulario similar a create, password opcional -->
-</x-app-layout>
-```
-
-**show.blade.php** - Ver detalles usuario
-```blade
-<x-app-layout>
-    <!-- Información del usuario -->
-    <!-- Estadísticas (ventas si es vendedor, órdenes si es operario) -->
-</x-app-layout>
-```
-
-#### 3. Vistas de Clientes
-**Directorio**: `resources/views/clients/`
-
-Misma estructura que usuarios:
-- index.blade.php (lista con paginación)
-- create.blade.php (formulario: nombre, teléfono, email, dirección)
-- edit.blade.php
-- show.blade.php (incluir ventas del cliente)
-
-#### 4. Vistas de Productos
-**Directorio**: `resources/views/products/`
-
-**index.blade.php**
-```blade
-<!-- Tabla: Nombre, Tipo, Unidad, Stock Actual, Stock Mínimo, Usa Bobina -->
-<!-- Mostrar en rojo si stock_actual <= stock_minimo -->
-<!-- Botón "Nuevo Producto" solo para gestor -->
-```
-
-**create.blade.php**
-```blade
-<!-- Campos:
-  - name (text)
-  - type (select: bolsa_papel, friselina, caja, insumo)
-  - unidad (select: unidad, kg, metro)
-  - stock_actual (number)
-  - stock_minimo (number)
-  - usa_bobina (checkbox)
--->
-```
-
-**edit.blade.php** - Similar a create
-
-**show.blade.php**
-```blade
-<!-- Info del producto -->
-<!-- Historial de precios (tabla product_prices) -->
-<!-- Movimientos de stock recientes -->
-```
-
-#### 5. Vistas de Transportes
-**Directorio**: `resources/views/transports/`
-
-Simple, solo index, create, edit:
-- index: Tabla con nombre, costo
-- create: Formulario nombre, costo
-- edit: Igual que create
-
-#### 6. Vistas de Bobinas de Papel (Paper Coils)
+#### 1. Vistas de Bobinas de Papel (Paper Coils) - PRIORIDAD MEDIA
 **Directorio**: `resources/views/paper-coils/`
+
+**Controlador**: app/Http/Controllers/PaperCoilController.php (CREADO, FALTA IMPLEMENTAR MÉTODOS)
 
 **index.blade.php**
 ```blade
@@ -171,8 +91,34 @@ Simple, solo index, create, edit:
 -->
 ```
 
-#### 7. Vistas de Órdenes de Producción
+**edit.blade.php** - Similar a create
+
+**show.blade.php**
+```blade
+<!-- Detalles de la bobina -->
+<!-- Productos que usan esta bobina -->
+<!-- Consumo histórico -->
+```
+
+#### 2. Vistas de Órdenes de Producción - PRIORIDAD MEDIA
 **Directorio**: `resources/views/production-orders/`
+
+**Controlador**: app/Http/Controllers/ProductionOrderController.php (CREADO, FALTA IMPLEMENTAR MÉTODOS)
+
+**IMPORTANTE**: Implementar métodos especiales en el controlador:
+```php
+public function start(ProductionOrder $order) {
+    $order->update(['estado' => 'produccion', 'started_at' => now()]);
+}
+
+public function pause(ProductionOrder $order) {
+    $order->update(['estado' => 'pausada']);
+}
+
+public function finish(ProductionOrder $order) {
+    $order->update(['estado' => 'finalizada', 'finished_at' => now()]);
+}
+```
 
 **index.blade.php**
 ```blade
@@ -190,40 +136,59 @@ Simple, solo index, create, edit:
 -->
 ```
 
+**edit.blade.php** - Editar cantidad y estado
+
 **show.blade.php**
 ```blade
 <!-- Detalles de la orden -->
 <!-- Tiempos de producción (tabla production_times) -->
-<!-- Botones para cambiar estado -->
+<!-- Botones para cambiar estado (Iniciar, Pausar, Finalizar) -->
 ```
 
-#### 8. Vistas de Ventas
+#### 3. Vistas de Ventas - PRIORIDAD ALTA (MÁS COMPLEJA)
 **Directorio**: `resources/views/sales/`
+
+**Controlador**: app/Http/Controllers/SaleController.php (CREADO, FALTA IMPLEMENTAR)
+
+**IMPORTANTE**: El método store debe:
+1. Crear la venta
+2. Crear los sale_items (tabla intermedia)
+3. Restar stock de productos
+4. Crear movimientos de stock (stock_movements)
+5. Validar que haya stock suficiente
 
 **index.blade.php**
 ```blade
 <!-- Tabla: ID, Cliente, Total, Transporte, Vendedor, Fecha -->
 <!-- Filtros por fecha y cliente -->
+<!-- Paginación -->
 ```
 
-**create.blade.php**
+**create.blade.php** - **REQUIERE JAVASCRIPT**
 ```blade
 <!-- Formulario de venta:
-  - client_id (select o autocompletar)
-  - Items dinámicos (agregar/quitar)
+  - client_id (select)
+  - Items dinámicos (agregar/quitar filas con JavaScript)
     - product_id (select)
     - cantidad (number)
-    - precio_unitario (number, autocompletar del precio actual)
-  - transporte (checkbox)
-  - total (calculado automáticamente con JS)
+    - precio_unitario (number, autocompletar del precio actual del producto)
+  - transport_id (select opcional)
+  - total (calculado automáticamente con JavaScript)
 -->
 ```
+
+**NOTA**: Necesita JavaScript para:
+- Agregar/quitar filas de items dinámicamente
+- Calcular precio unitario al seleccionar producto
+- Calcular total automáticamente (suma items + transporte si aplica)
 
 **show.blade.php**
 ```blade
 <!-- Información de la venta -->
+<!-- Datos del cliente -->
 <!-- Tabla de items vendidos -->
-<!-- Botón imprimir/exportar PDF -->
+<!-- Total y transporte -->
+<!-- Botón imprimir/exportar PDF (OPCIONAL) -->
 ```
 
 ---
@@ -412,17 +377,29 @@ public function finish(ProductionOrder $order) {
 
 ---
 
-## 🎯 PRIORIDADES DE DESARROLLO
+## 🎯 PRIORIDADES DE DESARROLLO - ESTADO ACTUAL
 
-1. **ALTA**: Actualizar navegación con todos los módulos
-2. **ALTA**: Vistas de Usuarios completas (ya tienes el controlador)
-3. **ALTA**: Vistas de Productos
-4. **ALTA**: Vistas de Clientes
-5. **MEDIA**: Vistas de Ventas (más complejo por items dinámicos)
-6. **MEDIA**: Vistas de Órdenes de Producción
-7. **MEDIA**: Vistas de Bobinas de Papel
-8. **BAJA**: Vistas de Transportes
-9. **BAJA**: Reportes y estadísticas adicionales
+### ✅ COMPLETADO (11-Ene-2026)
+1. ✅ **COMPLETADO**: Navegación con todos los módulos y roles
+2. ✅ **COMPLETADO**: Vistas de Usuarios completas (index, create, edit, show)
+3. ✅ **COMPLETADO**: Vistas de Productos completas (index, create, edit, show)
+4. ✅ **COMPLETADO**: Vistas de Clientes completas (index, create, edit, show)
+5. ✅ **COMPLETADO**: Vistas de Transportes completas (index, create, edit)
+6. ✅ **COMPLETADO**: GitIgnore actualizado y proyecto listo para Git
+
+### ⏳ PENDIENTE - SIGUIENTE SESIÓN
+1. **ALTA**: Implementar PaperCoilController y crear vistas de Bobinas
+2. **ALTA**: Implementar ProductionOrderController con métodos especiales (start, pause, finish)
+3. **ALTA**: Crear vistas de Órdenes de Producción
+4. **ALTA**: Implementar SaleController completo con lógica de:
+   - Validación de stock
+   - Creación de sale_items
+   - Actualización de stock
+   - Creación de movimientos de stock
+5. **ALTA**: Crear vistas de Ventas (requiere JavaScript para items dinámicos)
+6. **MEDIA**: Crear archivo JavaScript para formulario de ventas dinámico
+7. **BAJA**: Reportes y estadísticas adicionales
+8. **BAJA**: Exportar ventas a PDF (opcional)
 
 ---
 
@@ -490,18 +467,35 @@ php artisan view:cache
 
 ## ✅ CHECKLIST FINAL
 
-- [ ] Actualizar navegación
-- [ ] Crear vistas de usuarios (index, create, edit, show)
-- [ ] Crear vistas de clientes
-- [ ] Crear vistas de productos
-- [ ] Crear vistas de transportes
-- [ ] Crear vistas de bobinas
-- [ ] Crear vistas de órdenes de producción
-- [ ] Crear vistas de ventas
-- [ ] Implementar controladores pendientes
+### FASE 1 - COMPLETADA ✅
+- [x] Actualizar navegación con roles
+- [x] Crear vistas de usuarios (index, create, edit, show)
+- [x] Crear vistas de clientes (index, create, edit, show)
+- [x] Crear vistas de productos (index, create, edit, show)
+- [x] Crear vistas de transportes (index, create, edit)
+- [x] Actualizar GitIgnore para repositorio
+- [x] UserController implementado y funcional
+- [x] ClientController implementado y funcional
+- [x] ProductController implementado y funcional
+- [x] TransportController implementado y funcional
+
+### FASE 2 - PENDIENTE
+- [ ] Implementar PaperCoilController completo
+- [ ] Crear vistas de bobinas (index, create, edit, show)
+- [ ] Implementar ProductionOrderController con métodos especiales
+- [ ] Crear vistas de órdenes de producción (index, create, edit, show)
+- [ ] Implementar SaleController con lógica de stock
+- [ ] Crear vistas de ventas (index, create, show)
+- [ ] Crear JavaScript para formulario dinámico de ventas
 - [ ] Probar todos los CRUDs
-- [ ] Optimizar para producción
+
+### FASE 3 - DEPLOYMENT
+- [ ] Compilar assets: `npm run build`
+- [ ] Optimizar para producción: `php artisan optimize`
+- [ ] Configurar .env para producción
 - [ ] Subir a Hostinger
+- [ ] Ejecutar migraciones en producción
+- [ ] Crear usuarios iniciales en producción
 
 ---
 

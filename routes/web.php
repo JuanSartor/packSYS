@@ -44,8 +44,8 @@ Route::middleware(['auth'])->group(function () {
 
     // Productos - Todos los roles pueden ver, Gestor puede editar
     Route::get('/products', [ProductController::class, 'index'])->name('products.index');
-    Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
 
+    // Rutas de gestor ANTES de la ruta dinámica
     Route::middleware(['role:gestor'])->group(function () {
         Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
         Route::post('/products', [ProductController::class, 'store'])->name('products.store');
@@ -53,6 +53,9 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
         Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
     });
+
+    // Ruta show después (para que no capture /products/create)
+    Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
 
     // Transportes - Solo Gestor
     Route::middleware(['role:gestor'])->group(function () {
@@ -67,6 +70,9 @@ Route::middleware(['auth'])->group(function () {
     // Órdenes de Producción - Gestor y Operario
     Route::middleware(['role:gestor,operario'])->group(function () {
         Route::resource('production-orders', ProductionOrderController::class);
+        Route::post('/production-orders/{productionOrder}/start', [ProductionOrderController::class, 'start'])->name('production-orders.start');
+        Route::post('/production-orders/{productionOrder}/pause', [ProductionOrderController::class, 'pause'])->name('production-orders.pause');
+        Route::post('/production-orders/{productionOrder}/finish', [ProductionOrderController::class, 'finish'])->name('production-orders.finish');
     });
 
     // Ventas - Gestor y Vendedor
