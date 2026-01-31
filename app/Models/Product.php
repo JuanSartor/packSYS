@@ -18,6 +18,7 @@ class Product extends Model
         'stock_actual',
         'stock_minimo',
         'usa_bobina',
+        'eliminado',
     ];
 
     protected $casts = [

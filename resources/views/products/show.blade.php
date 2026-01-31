@@ -49,7 +49,7 @@
                         <div>
                             <p class="text-sm font-medium text-gray-500">Stock Actual</p>
                             <p class="mt-1 text-sm {{ $product->stock_actual <= $product->stock_minimo ? 'text-red-600 font-bold' : 'text-gray-900' }}">
-                                {{ number_format($product->stock_actual, 2) }}
+                                {{ formatNumber($product->stock_actual, 2) }}
                                 @if($product->stock_actual <= $product->stock_minimo)
                                     <span class="text-xs">(⚠ Bajo stock)</span>
                                 @endif
@@ -58,7 +58,7 @@
 
                         <div>
                             <p class="text-sm font-medium text-gray-500">Stock Mínimo</p>
-                            <p class="mt-1 text-sm text-gray-900">{{ number_format($product->stock_minimo, 2) }}</p>
+                            <p class="mt-1 text-sm text-gray-900">{{ formatNumber($product->stock_minimo, 2) }}</p>
                         </div>
 
                         <div>
@@ -76,7 +76,7 @@
                             <p class="text-sm font-medium text-gray-500">Precio Actual</p>
                             <p class="mt-1 text-sm text-gray-900">
                                 @if($product->currentPrice())
-                                    ${{ number_format($product->currentPrice()->precio, 2) }}
+                                    {{ formatCurrency($product->currentPrice()->precio, 2) }}
                                 @else
                                     <span class="text-gray-400">Sin precio</span>
                                 @endif
@@ -128,7 +128,7 @@
                                     @foreach($product->prices()->latest('vigente_desde')->get() as $price)
                                         <tr>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                ${{ number_format($price->precio, 2) }}
+                                                {{ formatCurrency($price->precio, 2) }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                 {{ $price->vigente_desde->format('d/m/Y') }}
@@ -182,7 +182,7 @@
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                {{ number_format($movement->cantidad, 2) }}
+                                                {{ formatNumber($movement->cantidad, 2) }}
                                             </td>
                                             <td class="px-6 py-4 text-sm text-gray-900">
                                                 {{ $movement->descripcion ?? 'N/A' }}

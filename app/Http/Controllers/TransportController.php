@@ -9,7 +9,7 @@ class TransportController extends Controller
 {
     public function index()
     {
-        $transports = Transport::latest('id')->paginate(15);
+        $transports = Transport::where('eliminado', 0)->latest('id')->paginate(15);
         return view('transports.index', compact('transports'));
     }
 
@@ -51,7 +51,7 @@ class TransportController extends Controller
 
     public function destroy(Transport $transport)
     {
-        $transport->delete();
+        $transport->update(['eliminado' => 1]);
 
         return redirect()->route('transports.index')
             ->with('success', 'Transporte eliminado exitosamente.');

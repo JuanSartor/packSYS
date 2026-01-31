@@ -13,14 +13,14 @@ class Sale extends Model
 
     protected $fillable = [
         'client_id',
+        'transport_id',
         'total',
-        'transporte',
         'created_by',
+        'eliminado',
     ];
 
     protected $casts = [
         'total' => 'decimal:2',
-        'transporte' => 'boolean',
     ];
 
     /**
@@ -29,6 +29,14 @@ class Sale extends Model
     public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class);
+    }
+
+    /**
+     * Relación: Venta pertenece a un Transporte
+     */
+    public function transport(): BelongsTo
+    {
+        return $this->belongsTo(Transport::class);
     }
 
     /**

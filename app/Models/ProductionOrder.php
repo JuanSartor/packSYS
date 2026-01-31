@@ -18,6 +18,7 @@ class ProductionOrder extends Model
         'created_by',
         'started_at',
         'finished_at',
+        'eliminado',
     ];
 
     protected $casts = [

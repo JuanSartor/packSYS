@@ -18,6 +18,7 @@ class PaperCoil extends Model
         'peso_inicial',
         'peso_actual',
         'alerta_minima',
+        'eliminado',
     ];
 
     protected $casts = [

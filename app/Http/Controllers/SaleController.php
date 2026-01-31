@@ -15,7 +15,8 @@ class SaleController extends Controller
 {
     public function index()
     {
-        $sales = Sale::with(['client', 'creator', 'transport'])
+        $sales = Sale::where('eliminado', 0)
+            ->with(['client', 'creator', 'transport'])
             ->latest('id')
             ->paginate(15);
 
@@ -24,11 +25,21 @@ class SaleController extends Controller
 
     public function create()
     {
-        $clients = Client::orderBy('nombre')->get();
-        $products = Product::where('stock_actual', '>', 0)->orderBy('name')->get();
-        $transports = Transport::orderBy('nombre')->get();
+        $clients = Client::where('eliminado', 0)->orderBy('nombre')->get();
+        $products = Product::where('eliminado', 0)->where('stock_actual', '>', 0)->orderBy('name')->get();
+        $transports = Transport::where('eliminado', 0)->orderBy('nombre')->get();
 
-        return view('sales.create', compact('clients', 'products', 'transports'));
+        // Preparar datos de productos para JavaScript
+        $productsData = $products->map(function($p) {
+            return [
+                'id' => $p->id,
+                'name' => $p->name,
+                'price' => $p->currentPrice() ? $p->currentPrice()->precio : 0,
+                'stock' => $p->stock_actual
+            ];
+        });
+
+        return view('sales.create', compact('clients', 'products', 'transports', 'productsData'));
     }
 
     public function store(Request $request)
@@ -39,7 +50,7 @@ class SaleController extends Controller
             // Validar datos básicos
             $validated = $request->validate([
                 'client_id' => ['required', 'exists:clients,id'],
-                'transport_id' => ['nullable', 'exists:transports,id'],
+                'transport_id' => ['required', 'exists:transports,id'],
                 'items' => ['required', 'array', 'min:1'],
                 'items.*.product_id' => ['required', 'exists:products,id'],
                 'items.*.cantidad' => ['required', 'numeric', 'min:0.01'],
@@ -133,8 +144,9 @@ class SaleController extends Controller
 
     public function destroy(Sale $sale)
     {
-        // No se permite eliminar ventas
+        $sale->update(['eliminado' => 1]);
+
         return redirect()->route('sales.index')
-            ->with('error', 'No se pueden eliminar ventas. Contacte al administrador si necesita anular una venta.');
+            ->with('success', 'Venta eliminada exitosamente.');
     }
 }

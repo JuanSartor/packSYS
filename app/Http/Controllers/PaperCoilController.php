@@ -9,7 +9,7 @@ class PaperCoilController extends Controller
 {
     public function index()
     {
-        $paperCoils = PaperCoil::latest('id')->paginate(15);
+        $paperCoils = PaperCoil::where('eliminado', 0)->latest('id')->paginate(15);
         return view('paper-coils.index', compact('paperCoils'));
     }
 
@@ -65,7 +65,7 @@ class PaperCoilController extends Controller
 
     public function destroy(PaperCoil $paperCoil)
     {
-        $paperCoil->delete();
+        $paperCoil->update(['eliminado' => 1]);
 
         return redirect()->route('paper-coils.index')
             ->with('success', 'Bobina de papel eliminada exitosamente.');

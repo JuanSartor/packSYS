@@ -10,7 +10,8 @@ class ProductionOrderController extends Controller
 {
     public function index()
     {
-        $orders = ProductionOrder::with(['product', 'creator'])
+        $orders = ProductionOrder::where('eliminado', 0)
+            ->with(['product', 'creator'])
             ->latest('id')
             ->paginate(15);
 
@@ -19,7 +20,7 @@ class ProductionOrderController extends Controller
 
     public function create()
     {
-        $products = Product::orderBy('name')->get();
+        $products = Product::where('eliminado', 0)->orderBy('name')->get();
         return view('production-orders.create', compact('products'));
     }
 
@@ -47,7 +48,7 @@ class ProductionOrderController extends Controller
 
     public function edit(ProductionOrder $productionOrder)
     {
-        $products = Product::orderBy('name')->get();
+        $products = Product::where('eliminado', 0)->orderBy('name')->get();
         return view('production-orders.edit', compact('productionOrder', 'products'));
     }
 
@@ -67,7 +68,7 @@ class ProductionOrderController extends Controller
 
     public function destroy(ProductionOrder $productionOrder)
     {
-        $productionOrder->delete();
+        $productionOrder->update(['eliminado' => 1]);
 
         return redirect()->route('production-orders.index')
             ->with('success', 'Orden de producción eliminada exitosamente.');

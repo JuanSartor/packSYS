@@ -11,7 +11,7 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::latest()->paginate(15);
+        $users = User::where('eliminado', 0)->latest()->paginate(15);
         return view('users.index', compact('users'));
     }
 
@@ -75,7 +75,7 @@ class UserController extends Controller
                 ->with('error', 'No puedes eliminar tu propio usuario.');
         }
 
-        $user->delete();
+        $user->update(['eliminado' => 1]);
 
         return redirect()->route('users.index')
             ->with('success', 'Usuario eliminado exitosamente.');

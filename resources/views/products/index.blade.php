@@ -76,11 +76,11 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">
                                             <span class="{{ $product->stock_actual <= $product->stock_minimo ? 'text-red-600 font-bold' : 'text-gray-900' }}">
-                                                {{ number_format($product->stock_actual, 2) }}
+                                                {{ formatNumber($product->stock_actual, 2) }}
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {{ number_format($product->stock_minimo, 2) }}
+                                            {{ formatNumber($product->stock_minimo, 2) }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                             @if($product->usa_bobina)

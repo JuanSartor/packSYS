@@ -45,7 +45,7 @@
 
                         <div>
                             <p class="text-sm font-medium text-gray-500">Cantidad</p>
-                            <p class="mt-1 text-sm text-gray-900">{{ number_format($productionOrder->cantidad, 2) }}</p>
+                            <p class="mt-1 text-sm text-gray-900">{{ formatNumber($productionOrder->cantidad, 2) }}</p>
                         </div>
 
                         <div>

@@ -45,7 +45,7 @@
                             <p class="text-sm font-medium text-gray-500">Transporte</p>
                             <p class="mt-1 text-sm text-gray-900">
                                 @if($sale->transport)
-                                    {{ $sale->transport->nombre }} - ${{ number_format($sale->transport->costo, 2) }}
+                                    {{ $sale->transport->nombre }} - {{ formatCurrency($sale->transport->costo, 2) }}
                                 @else
                                     Sin transporte
                                 @endif
@@ -54,7 +54,7 @@
 
                         <div>
                             <p class="text-sm font-medium text-gray-500">Total</p>
-                            <p class="mt-1 text-lg font-bold text-gray-900">${{ number_format($sale->total, 2) }}</p>
+                            <p class="mt-1 text-lg font-bold text-gray-900">{{ formatCurrency($sale->total, 2) }}</p>
                         </div>
                     </div>
                 </div>
@@ -82,13 +82,13 @@
                                             </a>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900">
-                                            {{ number_format($item->cantidad, 2) }}
+                                            {{ formatNumber($item->cantidad, 2) }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900">
-                                            ${{ number_format($item->precio_unitario, 2) }}
+                                            {{ formatCurrency($item->precio_unitario, 2) }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900">
-                                            ${{ number_format($item->cantidad * $item->precio_unitario, 2) }}
+                                            {{ formatCurrency($item->cantidad * $item->precio_unitario, 2) }}
                                         </td>
                                     </tr>
                                 @endforeach
@@ -96,7 +96,7 @@
                                 <tr class="bg-gray-50 font-semibold">
                                     <td colspan="3" class="px-6 py-4 text-sm text-right text-gray-900">Subtotal:</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900">
-                                        ${{ number_format($sale->items->sum(function($item) { return $item->cantidad * $item->precio_unitario; }), 2) }}
+                                        {{ formatCurrency($sale->items->sum(function($item) { return $item->cantidad * $item->precio_unitario; }), 2) }}
                                     </td>
                                 </tr>
 
@@ -104,7 +104,7 @@
                                     <tr class="bg-gray-50">
                                         <td colspan="3" class="px-6 py-4 text-sm text-right text-gray-900">Transporte:</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900">
-                                            ${{ number_format($sale->transport->costo, 2) }}
+                                            {{ formatCurrency($sale->transport->costo, 2) }}
                                         </td>
                                     </tr>
                                 @endif
@@ -112,7 +112,7 @@
                                 <tr class="bg-gray-100 font-bold text-lg">
                                     <td colspan="3" class="px-6 py-4 text-sm text-right text-gray-900">TOTAL:</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900">
-                                        ${{ number_format($sale->total, 2) }}
+                                        {{ formatCurrency($sale->total, 2) }}
                                     </td>
                                 </tr>
                             </tbody>

@@ -10,7 +10,7 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::latest()->paginate(15);
+        $products = Product::where('eliminado', 0)->latest()->paginate(15);
         return view('products.index', compact('products'));
     }
 
@@ -66,7 +66,7 @@ class ProductController extends Controller
 
     public function destroy(Product $product)
     {
-        $product->delete();
+        $product->update(['eliminado' => 1]);
 
         return redirect()->route('products.index')
             ->with('success', 'Producto eliminado exitosamente.');

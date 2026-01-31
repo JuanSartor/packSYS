@@ -5,19 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Transport extends Model
+class Canal extends Model
 {
     use HasFactory;
 
-    public $timestamps = false;
+    protected $table = 'canales';
 
     protected $fillable = [
-        'nombre',
-        'costo',
+        'descripcion',
         'eliminado',
     ];
 
-    protected $casts = [
-        'costo' => 'decimal:2',
-    ];
+    public function clients()
+    {
+        return $this->hasMany(Client::class);
+    }
 }

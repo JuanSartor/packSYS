@@ -60,24 +60,24 @@
                                             {{ $coil->tipo_papel }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {{ number_format($coil->ancho, 2) }}
+                                            {{ formatNumber($coil->ancho, 2) }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {{ number_format($coil->gramaje, 2) }}
+                                            {{ formatNumber($coil->gramaje, 2) }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">
                                             <span class="{{ $coil->peso_actual <= $coil->alerta_minima ? 'text-yellow-600 font-bold' : 'text-gray-900' }}">
-                                                {{ number_format($coil->peso_actual, 2) }}
+                                                {{ formatNumber($coil->peso_actual, 2) }}
                                                 @if($coil->peso_actual <= $coil->alerta_minima)
                                                     <span class="text-xs">⚠</span>
                                                 @endif
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {{ number_format($coil->peso_inicial, 2) }}
+                                            {{ formatNumber($coil->peso_inicial, 2) }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {{ number_format($coil->alerta_minima, 2) }}
+                                            {{ formatNumber($coil->alerta_minima, 2) }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <a href="{{ route('paper-coils.show', $coil) }}" class="text-blue-600 hover:text-blue-900 mr-3">Ver</a>

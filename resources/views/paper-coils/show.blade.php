@@ -29,23 +29,23 @@
 
                         <div>
                             <p class="text-sm font-medium text-gray-500">Ancho (cm)</p>
-                            <p class="mt-1 text-sm text-gray-900">{{ number_format($paperCoil->ancho, 2) }}</p>
+                            <p class="mt-1 text-sm text-gray-900">{{ formatNumber($paperCoil->ancho, 2) }}</p>
                         </div>
 
                         <div>
                             <p class="text-sm font-medium text-gray-500">Gramaje (g/m²)</p>
-                            <p class="mt-1 text-sm text-gray-900">{{ number_format($paperCoil->gramaje, 2) }}</p>
+                            <p class="mt-1 text-sm text-gray-900">{{ formatNumber($paperCoil->gramaje, 2) }}</p>
                         </div>
 
                         <div>
                             <p class="text-sm font-medium text-gray-500">Peso Inicial (kg)</p>
-                            <p class="mt-1 text-sm text-gray-900">{{ number_format($paperCoil->peso_inicial, 2) }}</p>
+                            <p class="mt-1 text-sm text-gray-900">{{ formatNumber($paperCoil->peso_inicial, 2) }}</p>
                         </div>
 
                         <div>
                             <p class="text-sm font-medium text-gray-500">Peso Actual (kg)</p>
                             <p class="mt-1 text-sm {{ $paperCoil->peso_actual <= $paperCoil->alerta_minima ? 'text-yellow-600 font-bold' : 'text-gray-900' }}">
-                                {{ number_format($paperCoil->peso_actual, 2) }}
+                                {{ formatNumber($paperCoil->peso_actual, 2) }}
                                 @if($paperCoil->peso_actual <= $paperCoil->alerta_minima)
                                     <span class="text-xs">(⚠ Alerta de peso bajo)</span>
                                 @endif
@@ -54,14 +54,14 @@
 
                         <div>
                             <p class="text-sm font-medium text-gray-500">Alerta Mínima (kg)</p>
-                            <p class="mt-1 text-sm text-gray-900">{{ number_format($paperCoil->alerta_minima, 2) }}</p>
+                            <p class="mt-1 text-sm text-gray-900">{{ formatNumber($paperCoil->alerta_minima, 2) }}</p>
                         </div>
 
                         <div>
                             <p class="text-sm font-medium text-gray-500">Consumo</p>
                             <p class="mt-1 text-sm text-gray-900">
-                                {{ number_format($paperCoil->peso_inicial - $paperCoil->peso_actual, 2) }} kg
-                                ({{ number_format((($paperCoil->peso_inicial - $paperCoil->peso_actual) / $paperCoil->peso_inicial) * 100, 1) }}%)
+                                {{ formatNumber($paperCoil->peso_inicial - $paperCoil->peso_actual, 2) }} kg
+                                ({{ formatNumber((($paperCoil->peso_inicial - $paperCoil->peso_actual) / $paperCoil->peso_inicial) * 100, 1) }}%)
                             </p>
                         </div>
 
@@ -111,7 +111,7 @@
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $product->name }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ ucfirst(str_replace('_', ' ', $product->type)) }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                {{ number_format($product->pivot->consumo_por_unidad, 4) }} kg
+                                                {{ formatNumber($product->pivot->consumo_por_unidad, 4) }} kg
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                                 <a href="{{ route('products.show', $product) }}" class="text-blue-600 hover:text-blue-900">Ver</a>

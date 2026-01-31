@@ -8,9 +8,9 @@
     <div class="py-12">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
             @if(session('error'))
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                    {{ session('error') }}
-                </div>
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                {{ session('error') }}
+            </div>
             @endif
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -27,13 +27,13 @@
                                 required>
                                 <option value="">Seleccione un cliente</option>
                                 @foreach($clients as $client)
-                                    <option value="{{ $client->id }}" {{ old('client_id') == $client->id ? 'selected' : '' }}>
-                                        {{ $client->nombre }}
-                                    </option>
+                                <option value="{{ $client->id }}" {{ old('client_id') == $client->id ? 'selected' : '' }}>
+                                    {{ $client->nombre }}
+                                </option>
                                 @endforeach
                             </select>
                             @error('client_id')
-                                <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
+                            <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
                             @enderror
                         </div>
 
@@ -54,17 +54,21 @@
 
                         <div class="mb-4">
                             <label for="transport_id" class="block text-gray-700 text-sm font-bold mb-2">
-                                Transporte (Opcional)
+                                Transporte <span class="text-red-500">*</span>
                             </label>
                             <select name="transport_id" id="transport_id"
-                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                                <option value="">Sin transporte</option>
+                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('transport_id') border-red-500 @enderror"
+                                required>
+                                <option value="">Seleccione un transporte</option>
                                 @foreach($transports as $transport)
-                                    <option value="{{ $transport->id }}" data-cost="{{ $transport->costo }}" {{ old('transport_id') == $transport->id ? 'selected' : '' }}>
-                                        {{ $transport->nombre }} - ${{ number_format($transport->costo, 2) }}
-                                    </option>
+                                <option value="{{ $transport->id }}" data-cost="{{ $transport->costo }}" {{ old('transport_id') == $transport->id ? 'selected' : '' }}>
+                                    {{ $transport->nombre }} - {{ formatCurrency($transport->costo) }}
+                                </option>
                                 @endforeach
                             </select>
+                            @error('transport_id')
+                                <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <div class="mb-6 p-4 bg-gray-50 rounded">
@@ -91,14 +95,7 @@
 
     <script>
         // Datos de productos con precios
-        const products = @json($products->map(function($p) {
-            return [
-                'id' => $p->id,
-                'name' => $p->name,
-                'price' => $p->currentPrice() ? $p->currentPrice()->precio : 0,
-                'stock' => $p->stock_actual
-            ];
-        }));
+        const products = @json($productsData);
 
         let itemIndex = 0;
 
@@ -120,7 +117,7 @@
                     <div class="flex-1">
                         <select name="items[${index}][product_id]" class="product-select shadow border rounded w-full py-2 px-3 text-gray-700" required>
                             <option value="">Seleccionar producto</option>
-                            ${products.map(p => `<option value="${p.id}" data-price="${p.price}" data-stock="${p.stock}">${p.name} (Stock: ${p.stock})</option>`).join('')}
+                            ${products.map(p => '<option value="' + p.id + '" data-price="' + p.price + '" data-stock="' + p.stock + '">' + p.name + ' (Stock: ' + p.stock + ')</option>').join('')}
                         </select>
                     </div>
                     <div class="w-24">
