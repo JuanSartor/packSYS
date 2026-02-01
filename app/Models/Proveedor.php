@@ -7,38 +7,34 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Client extends Model
+class Proveedor extends Model
 {
     use HasFactory;
 
+    protected $table = 'proveedores';
+
     protected $fillable = [
         'nombre',
-        'telefono',
-        'email',
-        'direccion',
-        'canal_id',
+        'descripcion',
         'created_by',
+        'fecha_creacion',
         'eliminado',
     ];
 
+    protected $casts = [
+        'fecha_creacion' => 'datetime',
+    ];
+
     /**
-     * Relación: Cliente pertenece a un Canal
+     * Relación: Proveedor tiene muchos Productos
      */
-    public function canal(): BelongsTo
+    public function products(): HasMany
     {
-        return $this->belongsTo(Canal::class);
+        return $this->hasMany(Product::class, 'proveedor_id');
     }
 
     /**
-     * Relación: Cliente tiene muchas Ventas
-     */
-    public function sales(): HasMany
-    {
-        return $this->hasMany(Sale::class);
-    }
-
-    /**
-     * Relación: Cliente creado por un Usuario
+     * Relación: Proveedor creado por un Usuario
      */
     public function creator(): BelongsTo
     {

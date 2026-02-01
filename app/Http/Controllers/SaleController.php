@@ -31,10 +31,12 @@ class SaleController extends Controller
 
         // Preparar datos de productos para JavaScript
         $productsData = $products->map(function($p) {
+            $currentPrice = $p->currentPrice();
             return [
                 'id' => $p->id,
                 'name' => $p->name,
-                'price' => $p->currentPrice() ? $p->currentPrice()->precio : 0,
+                'price' => $currentPrice ? $currentPrice->precio_venta : 0,
+                'price_id' => $currentPrice ? $currentPrice->id : null,
                 'stock' => $p->stock_actual
             ];
         });
@@ -53,6 +55,7 @@ class SaleController extends Controller
                 'transport_id' => ['required', 'exists:transports,id'],
                 'items' => ['required', 'array', 'min:1'],
                 'items.*.product_id' => ['required', 'exists:products,id'],
+                'items.*.product_price_id' => ['nullable', 'exists:product_prices,id'],
                 'items.*.cantidad' => ['required', 'numeric', 'min:0.01'],
                 'items.*.precio_unitario' => ['required', 'numeric', 'min:0'],
             ]);
@@ -91,8 +94,9 @@ class SaleController extends Controller
                 SaleItem::create([
                     'sale_id' => $sale->id,
                     'product_id' => $item['product_id'],
+                    'product_price_id' => $item['product_price_id'] ?? null,
                     'cantidad' => $item['cantidad'],
-                    'precio_unitario' => $item['precio_unitario'],
+                    'precio_unitario_venta' => $item['precio_unitario'],
                 ]);
 
                 // Restar stock del producto

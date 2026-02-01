@@ -85,10 +85,10 @@
                                             {{ formatNumber($item->cantidad, 2) }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900">
-                                            {{ formatCurrency($item->precio_unitario, 2) }}
+                                            {{ formatCurrency($item->precio_unitario_venta, 2) }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900">
-                                            {{ formatCurrency($item->cantidad * $item->precio_unitario, 2) }}
+                                            {{ formatCurrency($item->cantidad * $item->precio_unitario_venta, 2) }}
                                         </td>
                                     </tr>
                                 @endforeach
@@ -96,7 +96,7 @@
                                 <tr class="bg-gray-50 font-semibold">
                                     <td colspan="3" class="px-6 py-4 text-sm text-right text-gray-900">Subtotal:</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900">
-                                        {{ formatCurrency($sale->items->sum(function($item) { return $item->cantidad * $item->precio_unitario; }), 2) }}
+                                        {{ formatCurrency($sale->items->sum(function($item) { return $item->cantidad * $item->precio_unitario_venta; }), 2) }}
                                     </td>
                                 </tr>
 

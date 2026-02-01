@@ -117,8 +117,9 @@
                     <div class="flex-1">
                         <select name="items[${index}][product_id]" class="product-select shadow border rounded w-full py-2 px-3 text-gray-700" required>
                             <option value="">Seleccionar producto</option>
-                            ${products.map(p => '<option value="' + p.id + '" data-price="' + p.price + '" data-stock="' + p.stock + '">' + p.name + ' (Stock: ' + p.stock + ')</option>').join('')}
+                            ${products.map(p => '<option value="' + p.id + '" data-price="' + p.price + '" data-price-id="' + p.price_id + '" data-stock="' + p.stock + '">' + p.name + ' (Stock: ' + p.stock + ')</option>').join('')}
                         </select>
+                        <input type="hidden" name="items[${index}][product_price_id]" class="price-id-input">
                     </div>
                     <div class="w-24">
                         <input type="number" step="0.01" name="items[${index}][cantidad]" placeholder="Cant." class="cantidad-input shadow border rounded w-full py-2 px-3 text-gray-700" min="0.01" required>
@@ -143,7 +144,9 @@
             newRow.querySelector('.product-select').addEventListener('change', function() {
                 const option = this.options[this.selectedIndex];
                 const price = option.dataset.price || 0;
+                const priceId = option.dataset.priceId || '';
                 newRow.querySelector('.precio-input').value = parseFloat(price).toFixed(2);
+                newRow.querySelector('.price-id-input').value = priceId;
                 calculateRowSubtotal(newRow);
             });
 

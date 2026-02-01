@@ -30,7 +30,9 @@ class ClientController extends Controller
             'canal_id' => ['required', 'exists:canales,id'],
         ]);
 
-        Client::create($validated);
+        Client::create(array_merge($validated, [
+            'created_by' => auth()->id(),
+        ]));
 
         return redirect()->route('clients.index')
             ->with('success', 'Cliente creado exitosamente.');

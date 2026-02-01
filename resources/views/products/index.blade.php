@@ -45,7 +45,7 @@
                                         Stock Mínimo
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Usa Bobina
+                                        Precio de Venta
                                     </th>
                                     <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Acciones
@@ -83,11 +83,7 @@
                                             {{ formatNumber($product->stock_minimo, 2) }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            @if($product->usa_bobina)
-                                                <span class="text-green-600">Sí</span>
-                                            @else
-                                                <span class="text-gray-400">No</span>
-                                            @endif
+                                            {{ formatCurrency($product->currentPrice() ? $product->currentPrice()->precio_venta : 0) }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <a href="{{ route('products.show', $product) }}" class="text-blue-600 hover:text-blue-900 mr-3">Ver</a>
@@ -105,7 +101,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="8" class="px-6 py-4 text-center text-sm text-gray-500">
+                                        <td colspan="7" class="px-6 py-4 text-center text-sm text-gray-500">
                                             No hay productos registrados
                                         </td>
                                     </tr>

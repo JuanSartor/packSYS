@@ -25,6 +25,17 @@
                         </div>
 
                         <div class="mb-4">
+                            <label for="descripcion" class="block text-gray-700 text-sm font-bold mb-2">
+                                Descripción
+                            </label>
+                            <textarea name="descripcion" id="descripcion" rows="3"
+                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('descripcion') border-red-500 @enderror">{{ old('descripcion') }}</textarea>
+                            @error('descripcion')
+                                <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="mb-4">
                             <label for="type" class="block text-gray-700 text-sm font-bold mb-2">
                                 Tipo <span class="text-red-500">*</span>
                             </label>
@@ -84,6 +95,30 @@
                         </div>
 
                         <div class="mb-4">
+                            <label for="costo" class="block text-gray-700 text-sm font-bold mb-2">
+                                Costo <span class="text-red-500">*</span>
+                            </label>
+                            <input type="number" step="0.01" name="costo" id="costo" value="{{ old('costo', 0) }}"
+                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('costo') border-red-500 @enderror"
+                                required>
+                            @error('costo')
+                                <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="precio_venta" class="block text-gray-700 text-sm font-bold mb-2">
+                                Precio de Venta <span class="text-red-500">*</span>
+                            </label>
+                            <input type="number" step="0.01" name="precio_venta" id="precio_venta" value="{{ old('precio_venta', 0) }}"
+                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('precio_venta') border-red-500 @enderror"
+                                required>
+                            @error('precio_venta')
+                                <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="mb-4">
                             <label class="flex items-center">
                                 <input type="checkbox" name="usa_bobina" id="usa_bobina" value="1" {{ old('usa_bobina') ? 'checked' : '' }}
                                     class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
@@ -92,6 +127,47 @@
                             @error('usa_bobina')
                                 <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
                             @enderror
+                        </div>
+
+                        <div id="dimensiones-container" class="mb-4 hidden">
+                            <div class="bg-gray-50 p-4 rounded">
+                                <h4 class="font-semibold text-gray-700 mb-3">Dimensiones del Producto</h4>
+
+                                <div class="grid grid-cols-3 gap-4">
+                                    <div>
+                                        <label for="ancho" class="block text-gray-700 text-sm font-bold mb-2">
+                                            Ancho (cm) <span class="text-red-500 dimension-required">*</span>
+                                        </label>
+                                        <input type="number" step="0.01" name="ancho" id="ancho" value="{{ old('ancho') }}"
+                                            class="dimension-field shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('ancho') border-red-500 @enderror">
+                                        @error('ancho')
+                                            <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+
+                                    <div>
+                                        <label for="largo" class="block text-gray-700 text-sm font-bold mb-2">
+                                            Largo (cm) <span class="text-red-500 dimension-required">*</span>
+                                        </label>
+                                        <input type="number" step="0.01" name="largo" id="largo" value="{{ old('largo') }}"
+                                            class="dimension-field shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('largo') border-red-500 @enderror">
+                                        @error('largo')
+                                            <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+
+                                    <div>
+                                        <label for="fuelle" class="block text-gray-700 text-sm font-bold mb-2">
+                                            Fuelle (cm) <span class="text-red-500 dimension-required">*</span>
+                                        </label>
+                                        <input type="number" step="0.01" name="fuelle" id="fuelle" value="{{ old('fuelle') }}"
+                                            class="dimension-field shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('fuelle') border-red-500 @enderror">
+                                        @error('fuelle')
+                                            <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="flex items-center justify-between mt-6">
@@ -107,4 +183,33 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const usaBobinaCheckbox = document.getElementById('usa_bobina');
+            const dimensionesContainer = document.getElementById('dimensiones-container');
+            const dimensionFields = document.querySelectorAll('.dimension-field');
+
+            function toggleDimensiones() {
+                if (usaBobinaCheckbox.checked) {
+                    dimensionesContainer.classList.remove('hidden');
+                    dimensionFields.forEach(field => {
+                        field.required = true;
+                    });
+                } else {
+                    dimensionesContainer.classList.add('hidden');
+                    dimensionFields.forEach(field => {
+                        field.required = false;
+                        field.value = '';
+                    });
+                }
+            }
+
+            // Ejecutar al cargar la página
+            toggleDimensiones();
+
+            // Ejecutar cuando cambie el checkbox
+            usaBobinaCheckbox.addEventListener('change', toggleDimensiones);
+        });
+    </script>
 </x-app-layout>

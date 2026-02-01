@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Product extends Model
@@ -13,11 +14,17 @@ class Product extends Model
 
     protected $fillable = [
         'name',
+        'descripcion',
         'type',
+        'proveedor_id',
         'unidad',
         'stock_actual',
         'stock_minimo',
         'usa_bobina',
+        'ancho',
+        'largo',
+        'fuelle',
+        'created_by',
         'eliminado',
     ];
 
@@ -25,6 +32,9 @@ class Product extends Model
         'stock_actual' => 'decimal:2',
         'stock_minimo' => 'decimal:2',
         'usa_bobina' => 'boolean',
+        'ancho' => 'decimal:2',
+        'largo' => 'decimal:2',
+        'fuelle' => 'decimal:2',
     ];
 
     /**
@@ -82,5 +92,21 @@ class Product extends Model
     public function currentPrice()
     {
         return $this->prices()->latest('vigente_desde')->first();
+    }
+
+    /**
+     * Relación: Producto creado por un Usuario
+     */
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * Relación: Producto pertenece a un Proveedor
+     */
+    public function proveedor(): BelongsTo
+    {
+        return $this->belongsTo(Proveedor::class);
     }
 }

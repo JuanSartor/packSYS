@@ -17,6 +17,8 @@ class ProductPrice extends Model
         'costo',
         'precio_venta',
         'vigente_desde',
+        'created_by',
+        'eliminado',
     ];
 
     protected $casts = [
@@ -31,5 +33,13 @@ class ProductPrice extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    /**
+     * Relación: Precio creado por un Usuario
+     */
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

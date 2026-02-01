@@ -27,6 +27,13 @@
                             <p class="mt-1 text-sm text-gray-900">{{ $product->name }}</p>
                         </div>
 
+                        @if($product->descripcion)
+                        <div class="col-span-2">
+                            <p class="text-sm font-medium text-gray-500">Descripción</p>
+                            <p class="mt-1 text-sm text-gray-900">{{ $product->descripcion }}</p>
+                        </div>
+                        @endif
+
                         <div>
                             <p class="text-sm font-medium text-gray-500">Tipo</p>
                             <p class="mt-1">
@@ -71,6 +78,29 @@
                                 @endif
                             </p>
                         </div>
+
+                        @if($product->usa_bobina && ($product->ancho || $product->largo || $product->fuelle))
+                        <div class="col-span-2">
+                            <p class="text-sm font-medium text-gray-500 mb-2">Dimensiones</p>
+                            <div class="flex gap-4 text-sm text-gray-900">
+                                @if($product->ancho)
+                                    <div>
+                                        <span class="font-medium">Ancho:</span> {{ formatNumber($product->ancho, 2) }} cm
+                                    </div>
+                                @endif
+                                @if($product->largo)
+                                    <div>
+                                        <span class="font-medium">Largo:</span> {{ formatNumber($product->largo, 2) }} cm
+                                    </div>
+                                @endif
+                                @if($product->fuelle)
+                                    <div>
+                                        <span class="font-medium">Fuelle:</span> {{ formatNumber($product->fuelle, 2) }} cm
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                        @endif
 
                         <div>
                             <p class="text-sm font-medium text-gray-500">Precio Actual</p>

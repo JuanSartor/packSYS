@@ -15,12 +15,13 @@ class SaleItem extends Model
     protected $fillable = [
         'sale_id',
         'product_id',
+        'product_price_id',
         'cantidad',
-        'precio_unitario',
+        'precio_unitario_venta',
     ];
 
     protected $casts = [
-        'precio_unitario' => 'decimal:2',
+        'precio_unitario_venta' => 'decimal:2',
     ];
 
     /**
@@ -37,5 +38,13 @@ class SaleItem extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    /**
+     * Relación: Item pertenece a un ProductPrice (precio histórico)
+     */
+    public function productPrice(): BelongsTo
+    {
+        return $this->belongsTo(ProductPrice::class);
     }
 }
