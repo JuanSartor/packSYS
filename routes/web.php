@@ -6,7 +6,9 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CanalController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductTypeController;
 use App\Http\Controllers\ProveedorController;
+use App\Http\Controllers\UnidadController;
 use App\Http\Controllers\TransportController;
 use App\Http\Controllers\PaperCoilController;
 use App\Http\Controllers\ProductionOrderController;
@@ -47,6 +49,16 @@ Route::middleware(['auth'])->group(function () {
     // Proveedores - Solo Gestor
     Route::middleware(['role:gestor'])->group(function () {
         Route::resource('proveedores', ProveedorController::class);
+    });
+
+    // Tipos de Producto - Solo Gestor
+    Route::middleware(['role:gestor'])->group(function () {
+        Route::resource('product-types', ProductTypeController::class);
+    });
+
+    // Unidades - Solo Gestor
+    Route::middleware(['role:gestor'])->group(function () {
+        Route::resource('unidades', UnidadController::class);
     });
 
     // Clientes - Gestor y Vendedor

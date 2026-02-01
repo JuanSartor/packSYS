@@ -15,9 +15,9 @@ class Product extends Model
     protected $fillable = [
         'name',
         'descripcion',
-        'type',
+        'product_type_id',
         'proveedor_id',
-        'unidad',
+        'unidad_id',
         'stock_actual',
         'stock_minimo',
         'usa_bobina',
@@ -108,5 +108,21 @@ class Product extends Model
     public function proveedor(): BelongsTo
     {
         return $this->belongsTo(Proveedor::class);
+    }
+
+    /**
+     * Relación: Producto pertenece a un Tipo de Producto
+     */
+    public function productType(): BelongsTo
+    {
+        return $this->belongsTo(ProductType::class);
+    }
+
+    /**
+     * Relación: Producto pertenece a una Unidad
+     */
+    public function unidad(): BelongsTo
+    {
+        return $this->belongsTo(Unidad::class);
     }
 }

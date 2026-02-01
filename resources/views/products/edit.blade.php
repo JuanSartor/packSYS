@@ -37,21 +37,23 @@
                         </div>
 
                         <div class="mb-4">
-                            <label for="type" class="block text-gray-700 text-sm font-bold mb-2">
-                                Tipo <span class="text-red-500">*</span>
+                            <label class="block text-gray-700 text-sm font-bold mb-2">
+                                Tipo de Producto
                             </label>
-                            <select name="type" id="type"
-                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('type') border-red-500 @enderror"
-                                required>
-                                <option value="">Seleccione un tipo</option>
-                                <option value="bolsa_papel" {{ old('type', $product->type) == 'bolsa_papel' ? 'selected' : '' }}>Bolsa de Papel</option>
-                                <option value="friselina" {{ old('type', $product->type) == 'friselina' ? 'selected' : '' }}>Friselina</option>
-                                <option value="caja" {{ old('type', $product->type) == 'caja' ? 'selected' : '' }}>Caja</option>
-                                <option value="insumo" {{ old('type', $product->type) == 'insumo' ? 'selected' : '' }}>Insumo</option>
-                            </select>
-                            @error('type')
-                                <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
-                            @enderror
+                            <div class="bg-gray-50 border border-gray-300 rounded w-full py-2 px-3 text-gray-700">
+                                {{ $product->productType ? $product->productType->nombre : 'Sin tipo' }}
+                            </div>
+                            <input type="hidden" name="product_type_id" value="{{ $product->product_type_id }}">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2">
+                                Proveedor
+                            </label>
+                            <div class="bg-gray-50 border border-gray-300 rounded w-full py-2 px-3 text-gray-700">
+                                {{ $product->proveedor ? $product->proveedor->nombre : 'Sin proveedor' }}
+                            </div>
+                            <input type="hidden" name="proveedor_id" value="{{ $product->proveedor_id }}">
                         </div>
 
                         <div class="mb-4">

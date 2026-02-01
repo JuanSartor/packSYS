@@ -50,7 +50,7 @@
                                         <form action="{{ route('canales.destroy', $canal) }}" method="POST" class="inline">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('¿Está seguro de eliminar este canal?')">
+                                            <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirmDelete(event, '¿Está seguro de eliminar este canal?')">
                                                 Eliminar
                                             </button>
                                         </form>

@@ -118,7 +118,7 @@
                             @endif
 
                             @if(in_array($productionOrder->estado, ['produccion', 'pausada']))
-                                <form action="{{ route('production-orders.finish', $productionOrder) }}" method="POST" class="inline" onsubmit="return confirm('¿Está seguro de finalizar esta orden? Se incrementará el stock del producto.')">
+                                <form action="{{ route('production-orders.finish', $productionOrder) }}" method="POST" class="inline" onsubmit="return confirmDelete(event, '¿Está seguro de finalizar esta orden? Se incrementará el stock del producto.')">
                                     @csrf
                                     <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700">
                                         Finalizar
@@ -133,7 +133,7 @@
                             <form action="{{ route('production-orders.destroy', $productionOrder) }}" method="POST" class="inline">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700" onclick="return confirm('¿Está seguro de eliminar esta orden?')">
+                                <button type="submit" class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700" onclick="return confirmDelete(event, '¿Está seguro de eliminar esta orden?')">
                                     Eliminar
                                 </button>
                             </form>

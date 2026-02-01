@@ -19,7 +19,15 @@ class ProductController extends Controller
     public function create()
     {
         $proveedores = Proveedor::where('eliminado', 0)->orderBy('nombre')->get();
-        return view('products.create', compact('proveedores'));
+        $productTypes = \App\Models\ProductType::where('eliminado', 0)->orderBy('nombre')->get();
+
+        // Si viene un ID de producto similar, cargar sus datos
+        $similarProduct = null;
+        if (request('similar')) {
+            $similarProduct = Product::with('prices')->find(request('similar'));
+        }
+
+        return view('products.create', compact('proveedores', 'productTypes', 'similarProduct'));
     }
 
     public function store(Request $request)
@@ -27,8 +35,8 @@ class ProductController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:150'],
             'descripcion' => ['nullable', 'string'],
-            'type' => ['required', Rule::in(['bolsa_papel', 'friselina', 'caja', 'insumo'])],
-            'proveedor_id' => ['nullable', 'exists:proveedores,id'],
+            'product_type_id' => ['required', 'exists:product_types,id'],
+            'proveedor_id' => ['required', 'exists:proveedores,id'],
             'unidad' => ['required', Rule::in(['unidad', 'kg', 'metro'])],
             'stock_actual' => ['required', 'numeric', 'min:0'],
             'stock_minimo' => ['required', 'numeric', 'min:0'],
@@ -66,7 +74,8 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         $proveedores = Proveedor::where('eliminado', 0)->orderBy('nombre')->get();
-        return view('products.edit', compact('product', 'proveedores'));
+        $productTypes = \App\Models\ProductType::where('eliminado', 0)->orderBy('nombre')->get();
+        return view('products.edit', compact('product', 'proveedores', 'productTypes'));
     }
 
     public function update(Request $request, Product $product)
@@ -74,8 +83,8 @@ class ProductController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:150'],
             'descripcion' => ['nullable', 'string'],
-            'type' => ['required', Rule::in(['bolsa_papel', 'friselina', 'caja', 'insumo'])],
-            'proveedor_id' => ['nullable', 'exists:proveedores,id'],
+            'product_type_id' => ['required', 'exists:product_types,id'],
+            'proveedor_id' => ['required', 'exists:proveedores,id'],
             'unidad' => ['required', Rule::in(['unidad', 'kg', 'metro'])],
             'stock_actual' => ['required', 'numeric', 'min:0'],
             'stock_minimo' => ['required', 'numeric', 'min:0'],

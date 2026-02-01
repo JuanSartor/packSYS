@@ -88,11 +88,12 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <a href="{{ route('products.show', $product) }}" class="text-blue-600 hover:text-blue-900 mr-3">Ver</a>
                                             @if(Auth::user()->isGestor())
+                                                <a href="{{ route('products.create', ['similar' => $product->id]) }}" class="text-green-600 hover:text-green-900 mr-3">Crear Similar</a>
                                                 <a href="{{ route('products.edit', $product) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">Editar</a>
                                                 <form action="{{ route('products.destroy', $product) }}" method="POST" class="inline">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('¿Está seguro de eliminar este producto?')">
+                                                    <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirmDelete(event, '¿Está seguro de eliminar este producto?')">
                                                         Eliminar
                                                     </button>
                                                 </form>

@@ -2,10 +2,10 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Clientes
+                Unidades
             </h2>
-            <a href="{{ route('clients.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                Nuevo Cliente
+            <a href="{{ route('unidades.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                Nueva Unidad
             </a>
         </div>
     </x-slot>
@@ -13,7 +13,7 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             @if(session('success'))
-                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
                     {{ session('success') }}
                 </div>
             @endif
@@ -27,47 +27,39 @@
                                     ID
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Nombre
+                                    Descripción
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Teléfono
+                                    Productos
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Email
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Dirección
-                                </th>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Acciones
                                 </th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
-                            @forelse($clients as $client)
+                            @forelse($unidades as $unidad)
                                 <tr>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        {{ $client->id }}
+                                        {{ $unidad->id }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        {{ $client->nombre }}
+                                        {{ $unidad->descripcion }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        {{ $client->telefono ?? 'N/A' }}
+                                        {{ $unidad->products()->count() }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        {{ $client->email ?? 'N/A' }}
-                                    </td>
-                                    <td class="px-6 py-4 text-sm text-gray-900">
-                                        {{ $client->direccion ?? 'N/A' }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <a href="{{ route('clients.show', $client) }}" class="text-blue-600 hover:text-blue-900 mr-3">Ver</a>
-                                        <a href="{{ route('clients.edit', $client) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">Editar</a>
-                                        <form action="{{ route('clients.destroy', $client) }}" method="POST" class="inline">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <a href="{{ route('unidades.show', $unidad) }}" class="text-green-600 hover:text-green-900 mr-3">
+                                            Ver
+                                        </a>
+                                        <a href="{{ route('unidades.edit', $unidad) }}" class="text-blue-600 hover:text-blue-900 mr-3">
+                                            Editar
+                                        </a>
+                                        <form action="{{ route('unidades.destroy', $unidad) }}" method="POST" class="inline">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirmDelete(event, '¿Está seguro de eliminar este cliente?')">
+                                            <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirmDelete(event, '¿Está seguro de eliminar esta unidad?')">
                                                 Eliminar
                                             </button>
                                         </form>
@@ -75,18 +67,18 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500">
-                                        No hay clientes registrados
+                                    <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">
+                                        No hay unidades registradas
                                     </td>
                                 </tr>
                             @endforelse
                         </tbody>
                     </table>
-                </div>
-            </div>
 
-            <div class="mt-4">
-                {{ $clients->links() }}
+                    <div class="mt-4">
+                        {{ $unidades->links() }}
+                    </div>
+                </div>
             </div>
         </div>
     </div>

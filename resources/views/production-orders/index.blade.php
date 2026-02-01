@@ -90,7 +90,7 @@
                                             <form action="{{ route('production-orders.destroy', $order) }}" method="POST" class="inline">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('¿Está seguro de eliminar esta orden?')">
+                                                <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirmDelete(event, '¿Está seguro de eliminar esta orden?')">
                                                     Eliminar
                                                 </button>
                                             </form>

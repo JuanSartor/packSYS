@@ -7,29 +7,28 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Proveedor extends Model
+class Unidad extends Model
 {
     use HasFactory;
 
-    protected $table = 'proveedores';
+    protected $table = 'unidades';
 
     protected $fillable = [
-        'nombre',
         'descripcion',
         'created_by',
         'eliminado',
     ];
 
     /**
-     * Relación: Proveedor tiene muchos Productos
+     * Relación: Unidad tiene muchos Productos
      */
     public function products(): HasMany
     {
-        return $this->hasMany(Product::class, 'proveedor_id');
+        return $this->hasMany(Product::class, 'unidad_id');
     }
 
     /**
-     * Relación: Proveedor creado por un Usuario
+     * Relación: Unidad creada por un Usuario
      */
     public function creator(): BelongsTo
     {

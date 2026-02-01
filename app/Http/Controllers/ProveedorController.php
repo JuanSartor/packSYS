@@ -25,10 +25,18 @@ class ProveedorController extends Controller
             'descripcion' => ['nullable', 'string'],
         ]);
 
-        Proveedor::create(array_merge($validated, [
+        $proveedor = Proveedor::create(array_merge($validated, [
             'created_by' => auth()->id(),
-            'fecha_creacion' => now(),
         ]));
+
+        // Si es una petición AJAX, devolver JSON
+        if ($request->expectsJson()) {
+            return response()->json([
+                'id' => $proveedor->id,
+                'nombre' => $proveedor->nombre,
+                'descripcion' => $proveedor->descripcion,
+            ]);
+        }
 
         return redirect()->route('proveedores.index')
             ->with('success', 'Proveedor creado exitosamente.');

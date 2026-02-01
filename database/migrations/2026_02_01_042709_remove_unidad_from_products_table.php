@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('proveedores', function (Blueprint $table) {
-            if (Schema::hasColumn('proveedores', 'fecha_creacion')) {
-                $table->dropColumn('fecha_creacion');
+        Schema::table('products', function (Blueprint $table) {
+            if (Schema::hasColumn('products', 'unidad')) {
+                $table->dropColumn('unidad');
             }
         });
     }
@@ -23,8 +23,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('proveedores', function (Blueprint $table) {
-            $table->timestamp('fecha_creacion')->useCurrent();
+        Schema::table('products', function (Blueprint $table) {
+            $table->enum('unidad', ['unidad', 'kg', 'metro'])->after('proveedor_id');
         });
     }
 };
