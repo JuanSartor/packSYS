@@ -4,9 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\ProductPrice;
+use App\Models\ProductType;
 use App\Models\Proveedor;
+use App\Models\Unidad;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class ProductController extends Controller
 {
@@ -19,7 +20,8 @@ class ProductController extends Controller
     public function create()
     {
         $proveedores = Proveedor::where('eliminado', 0)->orderBy('nombre')->get();
-        $productTypes = \App\Models\ProductType::where('eliminado', 0)->orderBy('nombre')->get();
+        $productTypes = ProductType::where('eliminado', 0)->orderBy('nombre')->get();
+        $unidades = Unidad::where('eliminado', 0)->orderBy('descripcion')->get();
 
         // Si viene un ID de producto similar, cargar sus datos
         $similarProduct = null;
@@ -27,7 +29,7 @@ class ProductController extends Controller
             $similarProduct = Product::with('prices')->find(request('similar'));
         }
 
-        return view('products.create', compact('proveedores', 'productTypes', 'similarProduct'));
+        return view('products.create', compact('proveedores', 'productTypes', 'unidades', 'similarProduct'));
     }
 
     public function store(Request $request)
@@ -37,7 +39,7 @@ class ProductController extends Controller
             'descripcion' => ['nullable', 'string'],
             'product_type_id' => ['required', 'exists:product_types,id'],
             'proveedor_id' => ['required', 'exists:proveedores,id'],
-            'unidad' => ['required', Rule::in(['unidad', 'kg', 'metro'])],
+            'unidad_id' => ['required', 'exists:unidades,id'],
             'stock_actual' => ['required', 'numeric', 'min:0'],
             'stock_minimo' => ['required', 'numeric', 'min:0'],
             'usa_bobina' => ['boolean'],
@@ -74,8 +76,9 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         $proveedores = Proveedor::where('eliminado', 0)->orderBy('nombre')->get();
-        $productTypes = \App\Models\ProductType::where('eliminado', 0)->orderBy('nombre')->get();
-        return view('products.edit', compact('product', 'proveedores', 'productTypes'));
+        $productTypes = ProductType::where('eliminado', 0)->orderBy('nombre')->get();
+        $unidades = Unidad::where('eliminado', 0)->orderBy('descripcion')->get();
+        return view('products.edit', compact('product', 'proveedores', 'productTypes', 'unidades'));
     }
 
     public function update(Request $request, Product $product)
@@ -85,7 +88,7 @@ class ProductController extends Controller
             'descripcion' => ['nullable', 'string'],
             'product_type_id' => ['required', 'exists:product_types,id'],
             'proveedor_id' => ['required', 'exists:proveedores,id'],
-            'unidad' => ['required', Rule::in(['unidad', 'kg', 'metro'])],
+            'unidad_id' => ['required', 'exists:unidades,id'],
             'stock_actual' => ['required', 'numeric', 'min:0'],
             'stock_minimo' => ['required', 'numeric', 'min:0'],
             'usa_bobina' => ['nullable', 'boolean'],

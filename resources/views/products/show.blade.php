@@ -50,7 +50,7 @@
 
                         <div>
                             <p class="text-sm font-medium text-gray-500">Unidad</p>
-                            <p class="mt-1 text-sm text-gray-900">{{ ucfirst($product->unidad) }}</p>
+                            <p class="mt-1 text-sm text-gray-900">{{ $product->unidad ? $product->unidad->descripcion : 'N/A' }}</p>
                         </div>
 
                         <div>

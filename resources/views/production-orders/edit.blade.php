@@ -23,7 +23,7 @@
                                 <option value="">Seleccione un producto</option>
                                 @foreach($products as $product)
                                     <option value="{{ $product->id }}" {{ old('product_id', $productionOrder->product_id) == $product->id ? 'selected' : '' }}>
-                                        {{ $product->name }} ({{ ucfirst($product->type) }})
+                                        {{ $product->name }}
                                     </option>
                                 @endforeach
                             </select>
@@ -45,20 +45,20 @@
                         </div>
 
                         <div class="mb-4">
-                            <label for="estado" class="block text-gray-700 text-sm font-bold mb-2">
+                            <label for="order_status_id" class="block text-gray-700 text-sm font-bold mb-2">
                                 Estado <span class="text-red-500">*</span>
                             </label>
-                            <select name="estado" id="estado"
-                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('estado') border-red-500 @enderror"
+                            <select name="order_status_id" id="order_status_id"
+                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('order_status_id') border-red-500 @enderror"
                                 required>
                                 <option value="">Seleccione un estado</option>
-                                <option value="espera" {{ old('estado', $productionOrder->estado) == 'espera' ? 'selected' : '' }}>En Espera</option>
-                                <option value="pendiente" {{ old('estado', $productionOrder->estado) == 'pendiente' ? 'selected' : '' }}>Pendiente</option>
-                                <option value="produccion" {{ old('estado', $productionOrder->estado) == 'produccion' ? 'selected' : '' }}>En Producción</option>
-                                <option value="pausada" {{ old('estado', $productionOrder->estado) == 'pausada' ? 'selected' : '' }}>Pausada</option>
-                                <option value="finalizada" {{ old('estado', $productionOrder->estado) == 'finalizada' ? 'selected' : '' }}>Finalizada</option>
+                                @foreach($orderStatuses as $status)
+                                    <option value="{{ $status->id }}" {{ old('order_status_id', $productionOrder->order_status_id) == $status->id ? 'selected' : '' }}>
+                                        {{ $status->nombre }}
+                                    </option>
+                                @endforeach
                             </select>
-                            @error('estado')
+                            @error('order_status_id')
                                 <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
                             @enderror
                         </div>

@@ -9,7 +9,7 @@ class TransportController extends Controller
 {
     public function index()
     {
-        $transports = Transport::where('eliminado', 0)->latest('id')->paginate(15);
+        $transports = Transport::where('eliminado', 0)->latest()->paginate(15);
         return view('transports.index', compact('transports'));
     }
 
@@ -25,7 +25,18 @@ class TransportController extends Controller
             'costo' => ['required', 'numeric', 'min:0'],
         ]);
 
-        Transport::create($validated);
+        $transport = Transport::create(array_merge($validated, [
+            'created_by' => auth()->id(),
+        ]));
+
+        // Si es una petición AJAX, devolver JSON
+        if ($request->expectsJson()) {
+            return response()->json([
+                'id' => $transport->id,
+                'nombre' => $transport->nombre,
+                'costo' => $transport->costo,
+            ]);
+        }
 
         return redirect()->route('transports.index')
             ->with('success', 'Transporte creado exitosamente.');

@@ -53,9 +53,14 @@
                         </div>
 
                         <div class="mb-4">
-                            <label for="transport_id" class="block text-gray-700 text-sm font-bold mb-2">
-                                Transporte <span class="text-red-500">*</span>
-                            </label>
+                            <div class="flex items-center justify-between mb-2">
+                                <label for="transport_id" class="block text-gray-700 text-sm font-bold">
+                                    Transporte <span class="text-red-500">*</span>
+                                </label>
+                                <button type="button" onclick="openTransportModal()" class="text-blue-600 hover:text-blue-800 text-sm font-semibold">
+                                    + Agregar Transporte
+                                </button>
+                            </div>
                             <select name="transport_id" id="transport_id"
                                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('transport_id') border-red-500 @enderror"
                                 required>
@@ -89,6 +94,54 @@
                         </div>
                     </form>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para crear transporte -->
+    <div id="transportModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
+        <div class="relative bg-white rounded-lg shadow-xl w-full max-w-lg mx-4">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-semibold text-gray-900">Nuevo Transporte</h3>
+                    <button type="button" onclick="closeTransportModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <form id="transportForm">
+                    @csrf
+                    <div class="mb-4">
+                        <label for="modal_transport_nombre" class="block text-gray-700 text-sm font-bold mb-2">
+                            Nombre <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="modal_transport_nombre" name="nombre"
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
+                            required>
+                        <p id="modal_transport_nombre_error" class="text-red-500 text-xs italic mt-1 hidden"></p>
+                    </div>
+
+                    <div class="mb-6">
+                        <label for="modal_transport_costo" class="block text-gray-700 text-sm font-bold mb-2">
+                            Costo <span class="text-red-500">*</span>
+                        </label>
+                        <input type="number" step="0.01" id="modal_transport_costo" name="costo" min="0"
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
+                            required>
+                        <p id="modal_transport_costo_error" class="text-red-500 text-xs italic mt-1 hidden"></p>
+                    </div>
+
+                    <div class="flex items-center justify-end space-x-3">
+                        <button type="button" onclick="closeTransportModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                            Guardar
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -200,5 +253,90 @@
 
         // Recalcular total al cambiar transporte
         document.getElementById('transport_id').addEventListener('change', calculateTotal);
+
+        // Funciones para el modal de Transporte
+        function openTransportModal() {
+            document.getElementById('transportModal').classList.remove('hidden');
+            document.getElementById('modal_transport_nombre').focus();
+        }
+
+        function closeTransportModal() {
+            document.getElementById('transportModal').classList.add('hidden');
+            document.getElementById('transportForm').reset();
+            document.getElementById('modal_transport_nombre_error').classList.add('hidden');
+            document.getElementById('modal_transport_costo_error').classList.add('hidden');
+        }
+
+        // Manejar el submit del formulario del modal de transporte
+        document.getElementById('transportForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const submitButton = this.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+            submitButton.textContent = 'Guardando...';
+
+            // Ocultar errores previos
+            document.getElementById('modal_transport_nombre_error').classList.add('hidden');
+            document.getElementById('modal_transport_costo_error').classList.add('hidden');
+
+            try {
+                const response = await fetch('{{ route('transports.store') }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json',
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Agregar el nuevo transporte al select
+                    const select = document.getElementById('transport_id');
+                    const costo = parseFloat(data.costo).toFixed(2);
+                    const option = new Option(`${data.nombre} - $${costo}`, data.id, true, true);
+                    option.dataset.cost = data.costo;
+                    select.add(option);
+
+                    // Cerrar modal
+                    closeTransportModal();
+
+                    // Recalcular total
+                    calculateTotal();
+
+                    // Mostrar mensaje de éxito
+                    showSuccess('El transporte se ha creado exitosamente');
+                } else {
+                    // Mostrar errores de validación
+                    if (data.errors) {
+                        if (data.errors.nombre) {
+                            const errorElement = document.getElementById('modal_transport_nombre_error');
+                            errorElement.textContent = data.errors.nombre[0];
+                            errorElement.classList.remove('hidden');
+                        }
+                        if (data.errors.costo) {
+                            const errorElement = document.getElementById('modal_transport_costo_error');
+                            errorElement.textContent = data.errors.costo[0];
+                            errorElement.classList.remove('hidden');
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Ocurrió un error al crear el transporte');
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Guardar';
+            }
+        });
+
+        // Cerrar modal de transporte al hacer click fuera
+        document.getElementById('transportModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeTransportModal();
+            }
+        });
     </script>
 </x-app-layout>

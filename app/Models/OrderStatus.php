@@ -6,23 +6,21 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Transport extends Model
+class OrderStatus extends Model
 {
     use HasFactory;
 
+    protected $table = 'order_status';
+
     protected $fillable = [
         'nombre',
-        'costo',
+        'descripcion',
         'created_by',
         'eliminado',
     ];
 
-    protected $casts = [
-        'costo' => 'decimal:2',
-    ];
-
     /**
-     * Relación: Transporte creado por un Usuario
+     * Relación: Estado creado por un Usuario
      */
     public function creator(): BelongsTo
     {

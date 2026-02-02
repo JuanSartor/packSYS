@@ -15,6 +15,7 @@ class ProductionOrder extends Model
         'product_id',
         'cantidad',
         'estado',
+        'order_status_id',
         'created_by',
         'started_at',
         'finished_at',
@@ -40,6 +41,14 @@ class ProductionOrder extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * Relación: Orden tiene un Estado
+     */
+    public function orderStatus(): BelongsTo
+    {
+        return $this->belongsTo(OrderStatus::class);
     }
 
     /**

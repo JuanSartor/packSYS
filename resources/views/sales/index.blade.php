@@ -60,7 +60,7 @@
                                             #{{ $sale->id }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {{ $sale->client->nombre }}
+                                            {{ $sale->client ? $sale->client->nombre : 'Sin cliente' }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                             {{ formatCurrency($sale->total) }}
@@ -69,7 +69,7 @@
                                             {{ $sale->transport ? $sale->transport->nombre : 'Sin transporte' }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {{ $sale->creator->name }}
+                                            {{ $sale->creator ? $sale->creator->name : 'N/A' }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                             {{ $sale->created_at->format('d/m/Y H:i') }}

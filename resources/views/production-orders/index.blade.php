@@ -66,14 +66,8 @@
                                             {{ formatNumber($order->cantidad, 2) }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-                                                @if($order->estado === 'finalizada') bg-green-100 text-green-800
-                                                @elseif($order->estado === 'produccion') bg-blue-100 text-blue-800
-                                                @elseif($order->estado === 'pausada') bg-yellow-100 text-yellow-800
-                                                @elseif($order->estado === 'pendiente') bg-orange-100 text-orange-800
-                                                @else bg-gray-100 text-gray-800
-                                                @endif">
-                                                {{ ucfirst($order->estado) }}
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                                {{ $order->orderStatus ? $order->orderStatus->nombre : 'Sin estado' }}
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -84,9 +78,7 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <a href="{{ route('production-orders.show', $order) }}" class="text-blue-600 hover:text-blue-900 mr-3">Ver</a>
-                                            @if($order->estado !== 'finalizada')
-                                                <a href="{{ route('production-orders.edit', $order) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">Editar</a>
-                                            @endif
+                                            <a href="{{ route('production-orders.edit', $order) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">Editar</a>
                                             <form action="{{ route('production-orders.destroy', $order) }}" method="POST" class="inline">
                                                 @csrf
                                                 @method('DELETE')

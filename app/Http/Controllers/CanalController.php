@@ -24,7 +24,15 @@ class CanalController extends Controller
             'descripcion' => ['required', 'string', 'max:255'],
         ]);
 
-        Canal::create($validated);
+        $canal = Canal::create($validated);
+
+        // Si es una petición AJAX, devolver JSON
+        if ($request->expectsJson()) {
+            return response()->json([
+                'id' => $canal->id,
+                'descripcion' => $canal->descripcion,
+            ]);
+        }
 
         return redirect()->route('canales.index')
             ->with('success', 'Canal creado exitosamente.');

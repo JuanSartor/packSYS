@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\OrderStatus;
 use App\Models\Product;
 use App\Models\ProductionOrder;
 use Illuminate\Http\Request;
@@ -11,7 +12,7 @@ class ProductionOrderController extends Controller
     public function index()
     {
         $orders = ProductionOrder::where('eliminado', 0)
-            ->with(['product', 'creator'])
+            ->with(['product', 'creator', 'orderStatus'])
             ->latest('id')
             ->paginate(15);
 
@@ -21,7 +22,8 @@ class ProductionOrderController extends Controller
     public function create()
     {
         $products = Product::where('eliminado', 0)->orderBy('name')->get();
-        return view('production-orders.create', compact('products'));
+        $orderStatuses = OrderStatus::where('eliminado', 0)->orderBy('nombre')->get();
+        return view('production-orders.create', compact('products', 'orderStatuses'));
     }
 
     public function store(Request $request)
@@ -29,7 +31,7 @@ class ProductionOrderController extends Controller
         $validated = $request->validate([
             'product_id' => ['required', 'exists:products,id'],
             'cantidad' => ['required', 'numeric', 'min:0.01'],
-            'estado' => ['required', 'in:espera,pendiente,produccion,pausada,finalizada'],
+            'order_status_id' => ['required', 'exists:order_status,id'],
         ]);
 
         $validated['created_by'] = auth()->id();
@@ -42,14 +44,15 @@ class ProductionOrderController extends Controller
 
     public function show(ProductionOrder $productionOrder)
     {
-        $productionOrder->load(['product', 'creator', 'productionTimes']);
+        $productionOrder->load(['product', 'creator', 'productionTimes', 'orderStatus']);
         return view('production-orders.show', compact('productionOrder'));
     }
 
     public function edit(ProductionOrder $productionOrder)
     {
         $products = Product::where('eliminado', 0)->orderBy('name')->get();
-        return view('production-orders.edit', compact('productionOrder', 'products'));
+        $orderStatuses = OrderStatus::where('eliminado', 0)->orderBy('nombre')->get();
+        return view('production-orders.edit', compact('productionOrder', 'products', 'orderStatuses'));
     }
 
     public function update(Request $request, ProductionOrder $productionOrder)
@@ -57,7 +60,7 @@ class ProductionOrderController extends Controller
         $validated = $request->validate([
             'product_id' => ['required', 'exists:products,id'],
             'cantidad' => ['required', 'numeric', 'min:0.01'],
-            'estado' => ['required', 'in:espera,pendiente,produccion,pausada,finalizada'],
+            'order_status_id' => ['required', 'exists:order_status,id'],
         ]);
 
         $productionOrder->update($validated);

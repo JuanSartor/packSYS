@@ -10,6 +10,7 @@ use App\Http\Controllers\ProductTypeController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\UnidadController;
 use App\Http\Controllers\TransportController;
+use App\Http\Controllers\OrderStatusController;
 use App\Http\Controllers\PaperCoilController;
 use App\Http\Controllers\ProductionOrderController;
 use App\Http\Controllers\SaleController;
@@ -59,6 +60,11 @@ Route::middleware(['auth'])->group(function () {
     // Unidades - Solo Gestor
     Route::middleware(['role:gestor'])->group(function () {
         Route::resource('unidades', UnidadController::class);
+    });
+
+    // Estados de Orden - Solo Gestor
+    Route::middleware(['role:gestor'])->group(function () {
+        Route::resource('order-statuses', OrderStatusController::class)->except(['show']);
     });
 
     // Clientes - Gestor y Vendedor

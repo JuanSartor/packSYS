@@ -57,20 +57,13 @@
                         </div>
 
                         <div class="mb-4">
-                            <label for="unidad" class="block text-gray-700 text-sm font-bold mb-2">
-                                Unidad <span class="text-red-500">*</span>
+                            <label class="block text-gray-700 text-sm font-bold mb-2">
+                                Unidad
                             </label>
-                            <select name="unidad" id="unidad"
-                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('unidad') border-red-500 @enderror"
-                                required>
-                                <option value="">Seleccione una unidad</option>
-                                <option value="unidad" {{ old('unidad', $product->unidad) == 'unidad' ? 'selected' : '' }}>Unidad</option>
-                                <option value="kg" {{ old('unidad', $product->unidad) == 'kg' ? 'selected' : '' }}>Kilogramo (kg)</option>
-                                <option value="metro" {{ old('unidad', $product->unidad) == 'metro' ? 'selected' : '' }}>Metro</option>
-                            </select>
-                            @error('unidad')
-                                <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
-                            @enderror
+                            <div class="bg-gray-50 border border-gray-300 rounded w-full py-2 px-3 text-gray-700">
+                                {{ $product->unidad ? $product->unidad->descripcion : 'Sin unidad' }}
+                            </div>
+                            <input type="hidden" name="unidad_id" value="{{ $product->unidad_id }}">
                         </div>
 
                         <div class="mb-4">

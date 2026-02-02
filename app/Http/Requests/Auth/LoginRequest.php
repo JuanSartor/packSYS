@@ -2,9 +2,11 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Models\User;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -40,6 +42,29 @@ class LoginRequest extends FormRequest
     public function authenticate(): void
     {
         $this->ensureIsNotRateLimited();
+
+        // Verificar si el usuario existe y está eliminado
+        $user = User::where('email', $this->input('email'))->first();
+        if ($user && $user->eliminado == 1) {
+            RateLimiter::hit($this->throttleKey());
+
+            throw ValidationException::withMessages([
+                'email' => 'Esta cuenta ha sido desactivada.',
+            ]);
+        }
+
+        // Verificar si el usuario ya tiene una sesión activa en otro dispositivo
+        if ($user) {
+            $activeSession = DB::table('sessions')
+                ->where('user_id', $user->id)
+                ->first();
+
+            if ($activeSession) {
+                throw ValidationException::withMessages([
+                    'email' => 'Ya has iniciado sesión en otro dispositivo.',
+                ]);
+            }
+        }
 
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());

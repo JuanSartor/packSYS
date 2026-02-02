@@ -51,14 +51,8 @@
                         <div>
                             <p class="text-sm font-medium text-gray-500">Estado</p>
                             <p class="mt-1">
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-                                    @if($productionOrder->estado === 'finalizada') bg-green-100 text-green-800
-                                    @elseif($productionOrder->estado === 'produccion') bg-blue-100 text-blue-800
-                                    @elseif($productionOrder->estado === 'pausada') bg-yellow-100 text-yellow-800
-                                    @elseif($productionOrder->estado === 'pendiente') bg-orange-100 text-orange-800
-                                    @else bg-gray-100 text-gray-800
-                                    @endif">
-                                    {{ ucfirst($productionOrder->estado) }}
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                    {{ $productionOrder->orderStatus ? $productionOrder->orderStatus->nombre : 'Sin estado' }}
                                 </span>
                             </p>
                         </div>
@@ -97,52 +91,19 @@
                         @endif
                     </div>
 
-                    @if($productionOrder->estado !== 'finalizada')
-                        <div class="mt-6 flex space-x-3">
-                            @if($productionOrder->estado !== 'produccion')
-                                <form action="{{ route('production-orders.start', $productionOrder) }}" method="POST" class="inline">
-                                    @csrf
-                                    <button type="submit" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700">
-                                        Iniciar Producción
-                                    </button>
-                                </form>
-                            @endif
+                    <div class="mt-6 flex space-x-3">
+                        <a href="{{ route('production-orders.edit', $productionOrder) }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700">
+                            Editar
+                        </a>
 
-                            @if($productionOrder->estado === 'produccion')
-                                <form action="{{ route('production-orders.pause', $productionOrder) }}" method="POST" class="inline">
-                                    @csrf
-                                    <button type="submit" class="inline-flex items-center px-4 py-2 bg-yellow-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-700">
-                                        Pausar
-                                    </button>
-                                </form>
-                            @endif
-
-                            @if(in_array($productionOrder->estado, ['produccion', 'pausada']))
-                                <form action="{{ route('production-orders.finish', $productionOrder) }}" method="POST" class="inline" onsubmit="return confirmDelete(event, '¿Está seguro de finalizar esta orden? Se incrementará el stock del producto.')">
-                                    @csrf
-                                    <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700">
-                                        Finalizar
-                                    </button>
-                                </form>
-                            @endif
-
-                            <a href="{{ route('production-orders.edit', $productionOrder) }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700">
-                                Editar
-                            </a>
-
-                            <form action="{{ route('production-orders.destroy', $productionOrder) }}" method="POST" class="inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700" onclick="return confirmDelete(event, '¿Está seguro de eliminar esta orden?')">
-                                    Eliminar
-                                </button>
-                            </form>
-                        </div>
-                    @else
-                        <div class="mt-6">
-                            <p class="text-sm text-gray-600">Esta orden ha sido finalizada.</p>
-                        </div>
-                    @endif
+                        <form action="{{ route('production-orders.destroy', $productionOrder) }}" method="POST" class="inline">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700" onclick="return confirmDelete(event, '¿Está seguro de eliminar esta orden?')">
+                                Eliminar
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
 

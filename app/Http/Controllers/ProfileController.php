@@ -38,7 +38,7 @@ class ProfileController extends Controller
     }
 
     /**
-     * Delete the user's account.
+     * Delete the user's account (logical deletion).
      */
     public function destroy(Request $request): RedirectResponse
     {
@@ -48,9 +48,10 @@ class ProfileController extends Controller
 
         $user = $request->user();
 
-        Auth::logout();
+        // Eliminación lógica
+        $user->update(['eliminado' => 1]);
 
-        $user->delete();
+        Auth::logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
