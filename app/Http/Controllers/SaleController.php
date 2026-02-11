@@ -10,6 +10,7 @@ use App\Models\StockMovement;
 use App\Models\Transport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class SaleController extends Controller
 {
@@ -117,6 +118,9 @@ class SaleController extends Controller
             return redirect()->route('sales.index')
                 ->with('success', 'Venta creada exitosamente.');
 
+        } catch (ValidationException $e) {
+            DB::rollBack();
+            throw $e;
         } catch (\Exception $e) {
             DB::rollBack();
 

@@ -44,12 +44,12 @@ Route::middleware(['auth'])->group(function () {
 
     // Canales - Solo Gestor
     Route::middleware(['role:gestor'])->group(function () {
-        Route::resource('canales', CanalController::class)->except(['show']);
+        Route::resource('canales', CanalController::class)->except(['show'])->parameters(['canales' => 'canal']);
     });
 
     // Proveedores - Solo Gestor
     Route::middleware(['role:gestor'])->group(function () {
-        Route::resource('proveedores', ProveedorController::class);
+        Route::resource('proveedores', ProveedorController::class)->parameters(['proveedores' => 'proveedor']);
     });
 
     // Tipos de Producto - Solo Gestor
@@ -59,7 +59,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Unidades - Solo Gestor
     Route::middleware(['role:gestor'])->group(function () {
-        Route::resource('unidades', UnidadController::class);
+        Route::resource('unidades', UnidadController::class)->parameters(['unidades' => 'unidad']);
     });
 
     // Estados de Orden - Solo Gestor

@@ -62,3 +62,7 @@ mix-manifest.json
 .deployer/
 deploy.php
 nul
+
+# Laravel Dusk
+/tests/Browser/screenshots
+/tests/Browser/console
