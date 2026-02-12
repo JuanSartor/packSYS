@@ -10,7 +10,21 @@ class ClientController extends Controller
 {
     public function index()
     {
-        $clients = Client::where('eliminado', 0)->latest()->paginate(15);
+        $search = request('search');
+
+        $clients = Client::where('eliminado', 0)
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('nombre', 'like', "%{$search}%")
+                      ->orWhere('telefono', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%")
+                      ->orWhere('direccion', 'like', "%{$search}%");
+                });
+            })
+            ->latest()
+            ->paginate(15)
+            ->appends(['search' => $search]);
+
         return view('clients.index', compact('clients'));
     }
 

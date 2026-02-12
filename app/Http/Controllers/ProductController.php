@@ -13,7 +13,16 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::where('eliminado', 0)->latest()->paginate(15);
+        $search = request('search');
+
+        $products = Product::where('eliminado', 0)
+            ->when($search, function ($query, $search) {
+                $query->where('name', 'like', "%{$search}%");
+            })
+            ->latest()
+            ->paginate(15)
+            ->appends(['search' => $search]);
+
         return view('products.index', compact('products'));
     }
 

@@ -24,6 +24,8 @@
                 </div>
             @endif
 
+            <x-search-bar :action="route('sales.index')" placeholder="Buscar por cliente, transporte, vendedor..." />
+
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
                     <div class="overflow-x-auto">

@@ -9,7 +9,16 @@ class TransportController extends Controller
 {
     public function index()
     {
-        $transports = Transport::where('eliminado', 0)->latest()->paginate(15);
+        $search = request('search');
+
+        $transports = Transport::where('eliminado', 0)
+            ->when($search, function ($query, $search) {
+                $query->where('nombre', 'like', "%{$search}%");
+            })
+            ->latest()
+            ->paginate(15)
+            ->appends(['search' => $search]);
+
         return view('transports.index', compact('transports'));
     }
 

@@ -18,6 +18,8 @@
                 </div>
             @endif
 
+            <x-search-bar :action="route('proveedores.index')" placeholder="Buscar por nombre, descripcion..." />
+
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
                     <table class="min-w-full divide-y divide-gray-200">

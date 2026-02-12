@@ -11,7 +11,20 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::where('eliminado', 0)->latest()->paginate(15);
+        $search = request('search');
+
+        $users = User::where('eliminado', 0)
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%")
+                      ->orWhere('role', 'like', "%{$search}%");
+                });
+            })
+            ->latest()
+            ->paginate(15)
+            ->appends(['search' => $search]);
+
         return view('users.index', compact('users'));
     }
 

@@ -9,7 +9,16 @@ class CanalController extends Controller
 {
     public function index()
     {
-        $canales = Canal::where('eliminado', 0)->latest()->paginate(15);
+        $search = request('search');
+
+        $canales = Canal::where('eliminado', 0)
+            ->when($search, function ($query, $search) {
+                $query->where('descripcion', 'like', "%{$search}%");
+            })
+            ->latest()
+            ->paginate(15)
+            ->appends(['search' => $search]);
+
         return view('canales.index', compact('canales'));
     }
 

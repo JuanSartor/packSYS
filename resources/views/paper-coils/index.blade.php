@@ -18,6 +18,8 @@
                 </div>
             @endif
 
+            <x-search-bar :action="route('paper-coils.index')" placeholder="Buscar por tipo de papel, proveedor..." />
+
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
                     <div class="overflow-x-auto">

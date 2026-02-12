@@ -16,10 +16,20 @@ class SaleController extends Controller
 {
     public function index()
     {
+        $search = request('search');
+
         $sales = Sale::where('eliminado', 0)
             ->with(['client', 'creator', 'transport'])
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->whereHas('client', fn($q) => $q->where('nombre', 'like', "%{$search}%"))
+                      ->orWhereHas('transport', fn($q) => $q->where('nombre', 'like', "%{$search}%"))
+                      ->orWhereHas('creator', fn($q) => $q->where('name', 'like', "%{$search}%"));
+                });
+            })
             ->latest('id')
-            ->paginate(15);
+            ->paginate(15)
+            ->appends(['search' => $search]);
 
         return view('sales.index', compact('sales'));
     }

@@ -9,7 +9,16 @@ class UnidadController extends Controller
 {
     public function index()
     {
-        $unidades = Unidad::where('eliminado', 0)->latest()->paginate(15);
+        $search = request('search');
+
+        $unidades = Unidad::where('eliminado', 0)
+            ->when($search, function ($query, $search) {
+                $query->where('descripcion', 'like', "%{$search}%");
+            })
+            ->latest()
+            ->paginate(15)
+            ->appends(['search' => $search]);
+
         return view('unidades.index', compact('unidades'));
     }
 

@@ -9,7 +9,19 @@ class PaperCoilController extends Controller
 {
     public function index()
     {
-        $paperCoils = PaperCoil::where('eliminado', 0)->latest('id')->paginate(15);
+        $search = request('search');
+
+        $paperCoils = PaperCoil::where('eliminado', 0)
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('tipo_papel', 'like', "%{$search}%")
+                      ->orWhere('proveedor', 'like', "%{$search}%");
+                });
+            })
+            ->latest('id')
+            ->paginate(15)
+            ->appends(['search' => $search]);
+
         return view('paper-coils.index', compact('paperCoils'));
     }
 

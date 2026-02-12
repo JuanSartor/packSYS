@@ -9,7 +9,19 @@ class OrderStatusController extends Controller
 {
     public function index()
     {
-        $orderStatuses = OrderStatus::where('eliminado', 0)->latest()->paginate(15);
+        $search = request('search');
+
+        $orderStatuses = OrderStatus::where('eliminado', 0)
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('nombre', 'like', "%{$search}%")
+                      ->orWhere('descripcion', 'like', "%{$search}%");
+                });
+            })
+            ->latest()
+            ->paginate(15)
+            ->appends(['search' => $search]);
+
         return view('order-statuses.index', compact('orderStatuses'));
     }
 

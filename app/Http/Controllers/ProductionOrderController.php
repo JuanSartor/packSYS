@@ -11,10 +11,20 @@ class ProductionOrderController extends Controller
 {
     public function index()
     {
+        $search = request('search');
+
         $orders = ProductionOrder::where('eliminado', 0)
             ->with(['product', 'creator', 'orderStatus'])
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('estado', 'like', "%{$search}%")
+                      ->orWhereHas('product', fn($q) => $q->where('name', 'like', "%{$search}%"))
+                      ->orWhereHas('orderStatus', fn($q) => $q->where('nombre', 'like', "%{$search}%"));
+                });
+            })
             ->latest('id')
-            ->paginate(15);
+            ->paginate(15)
+            ->appends(['search' => $search]);
 
         return view('production-orders.index', compact('orders'));
     }
