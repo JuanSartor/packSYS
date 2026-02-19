@@ -12,6 +12,7 @@ use App\Http\Controllers\UnidadController;
 use App\Http\Controllers\TransportController;
 use App\Http\Controllers\OrderStatusController;
 use App\Http\Controllers\PaperCoilController;
+use App\Http\Controllers\MateriaPrimaController;
 use App\Http\Controllers\ProductionOrderController;
 use App\Http\Controllers\SaleController;
 use Illuminate\Support\Facades\Route;
@@ -92,7 +93,15 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('transports', TransportController::class)->except(['show']);
     });
 
-    // Bobinas de papel - Gestor y Operario
+    // Materias Primas - Gestor y Operario
+    Route::middleware(['role:gestor,operario'])->group(function () {
+        Route::get('/materias-primas/listar', [MateriaPrimaController::class, 'listar'])
+            ->name('materias-primas.listar');
+        Route::resource('materias-primas', MateriaPrimaController::class)
+            ->parameters(['materias-primas' => 'materiaPrima']);
+    });
+
+    // Bobinas de papel - Gestor y Operario (legacy)
     Route::middleware(['role:gestor,operario'])->group(function () {
         Route::resource('paper-coils', PaperCoilController::class);
     });

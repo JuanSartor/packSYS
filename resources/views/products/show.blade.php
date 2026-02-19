@@ -35,17 +35,8 @@
                         @endif
 
                         <div>
-                            <p class="text-sm font-medium text-gray-500">Tipo</p>
-                            <p class="mt-1">
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-                                    @if($product->type === 'bolsa_papel') bg-blue-100 text-blue-800
-                                    @elseif($product->type === 'friselina') bg-green-100 text-green-800
-                                    @elseif($product->type === 'caja') bg-yellow-100 text-yellow-800
-                                    @else bg-gray-100 text-gray-800
-                                    @endif">
-                                    {{ ucfirst(str_replace('_', ' ', $product->type)) }}
-                                </span>
-                            </p>
+                            <p class="text-sm font-medium text-gray-500">Tipo de Producto</p>
+                            <p class="mt-1 text-sm text-gray-900">{{ $product->productType ? $product->productType->nombre : 'N/A' }}</p>
                         </div>
 
                         <div>
@@ -68,36 +59,46 @@
                             <p class="mt-1 text-sm text-gray-900">{{ formatNumber($product->stock_minimo, 2) }}</p>
                         </div>
 
-                        <div>
-                            <p class="text-sm font-medium text-gray-500">Usa Bobina</p>
-                            <p class="mt-1 text-sm">
-                                @if($product->usa_bobina)
-                                    <span class="text-green-600 font-semibold">Sí</span>
-                                @else
-                                    <span class="text-gray-400">No</span>
-                                @endif
-                            </p>
-                        </div>
-
-                        @if($product->usa_bobina && ($product->ancho || $product->largo || $product->fuelle))
+                        @if($product->productoMateriasPrimas->count() > 0)
                         <div class="col-span-2">
-                            <p class="text-sm font-medium text-gray-500 mb-2">Dimensiones</p>
-                            <div class="flex gap-4 text-sm text-gray-900">
-                                @if($product->ancho)
-                                    <div>
-                                        <span class="font-medium">Ancho:</span> {{ formatNumber($product->ancho, 2) }} cm
-                                    </div>
-                                @endif
-                                @if($product->largo)
-                                    <div>
-                                        <span class="font-medium">Largo:</span> {{ formatNumber($product->largo, 2) }} cm
-                                    </div>
-                                @endif
-                                @if($product->fuelle)
-                                    <div>
-                                        <span class="font-medium">Fuelle:</span> {{ formatNumber($product->fuelle, 2) }} cm
-                                    </div>
-                                @endif
+                            <p class="text-sm font-medium text-gray-500 mb-2">Materias Primas Vinculadas</p>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200 text-sm">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Materia Prima</th>
+                                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Unidad</th>
+                                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Formula</th>
+                                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Consumo x Unidad</th>
+                                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Stock Disponible</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-200">
+                                        @foreach($product->productoMateriasPrimas as $pmp)
+                                            <tr>
+                                                <td class="px-3 py-2 text-gray-900">{{ $pmp->materiaPrima->nombre }}</td>
+                                                <td class="px-3 py-2 text-gray-500 text-xs">{{ $pmp->materiaPrima->unidad_consumo }}</td>
+                                                <td class="px-3 py-2 text-gray-500 text-xs font-mono">{{ $pmp->materiaPrima->formula_consumo ?? 'Sin formula' }}</td>
+                                                <td class="px-3 py-2 text-gray-900 font-medium">{{ formatNumber($pmp->consumo_por_unidad, 4) }} {{ $pmp->materiaPrima->unidad_consumo }}</td>
+                                                <td class="px-3 py-2 {{ $pmp->materiaPrima->stock_actual <= ($pmp->materiaPrima->alerta_minima ?? 0) ? 'text-red-600 font-bold' : 'text-gray-900' }}">
+                                                    {{ formatNumber($pmp->materiaPrima->stock_actual, 2) }}
+                                                </td>
+                                            </tr>
+                                            @if($product->materias_config && isset($product->materias_config[$pmp->materia_prima_id]))
+                                                <tr class="bg-gray-50">
+                                                    <td colspan="5" class="px-3 py-1">
+                                                        <div class="flex gap-3 text-xs text-gray-600">
+                                                            <span class="text-gray-400">Variables:</span>
+                                                            @foreach($product->materias_config[$pmp->materia_prima_id] as $campo => $valor)
+                                                                <span>{{ ucfirst(str_replace('_', ' ', $campo)) }} = {{ $valor }}</span>
+                                                            @endforeach
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @endif
+                                        @endforeach
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                         @endif

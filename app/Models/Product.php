@@ -24,6 +24,7 @@ class Product extends Model
         'ancho',
         'largo',
         'fuelle',
+        'materias_config',
         'created_by',
         'eliminado',
     ];
@@ -35,6 +36,7 @@ class Product extends Model
         'ancho' => 'decimal:2',
         'largo' => 'decimal:2',
         'fuelle' => 'decimal:2',
+        'materias_config' => 'array',
     ];
 
     /**
@@ -124,5 +126,22 @@ class Product extends Model
     public function unidad(): BelongsTo
     {
         return $this->belongsTo(Unidad::class);
+    }
+
+    /**
+     * Relación: Producto pertenece a muchas Materias Primas (sistema genérico)
+     */
+    public function materiasPrimas(): BelongsToMany
+    {
+        return $this->belongsToMany(MateriaPrima::class, 'producto_materia_prima')
+            ->withPivot('consumo_por_unidad');
+    }
+
+    /**
+     * Relación: Producto tiene muchos vínculos de Materia Prima
+     */
+    public function productoMateriasPrimas(): HasMany
+    {
+        return $this->hasMany(ProductoMateriaPrima::class);
     }
 }

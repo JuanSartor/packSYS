@@ -107,6 +107,57 @@
                 </div>
             </div>
 
+            @if($productionOrder->product->productoMateriasPrimas->count() > 0)
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6">
+                        <h3 class="text-lg font-semibold mb-4">Consumo de Materias Primas</h3>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Materia Prima</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Formula</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Consumo x Unidad</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Consumo Total</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stock Disponible</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    @foreach($productionOrder->product->productoMateriasPrimas as $pmp)
+                                        @php
+                                            $consumoTotal = $pmp->consumo_por_unidad * $productionOrder->cantidad;
+                                            $suficiente = $pmp->materiaPrima->stock_actual >= $consumoTotal;
+                                        @endphp
+                                        <tr class="{{ !$suficiente && $productionOrder->estado !== 'finalizada' ? 'bg-red-50' : '' }}">
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                {{ $pmp->materiaPrima->nombre }}
+                                                <span class="text-xs text-gray-400">({{ $pmp->materiaPrima->unidad_consumo }})</span>
+                                            </td>
+                                            <td class="px-6 py-4 text-xs font-mono text-gray-500">{{ $pmp->materiaPrima->formula_consumo ?? '-' }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ formatNumber($pmp->consumo_por_unidad, 4) }} {{ $pmp->materiaPrima->unidad_consumo }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">{{ formatNumber($consumoTotal, 4) }} {{ $pmp->materiaPrima->unidad_consumo }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm {{ !$suficiente ? 'text-red-600 font-bold' : 'text-gray-900' }}">
+                                                {{ formatNumber($pmp->materiaPrima->stock_actual, 2) }} {{ $pmp->materiaPrima->unidad_consumo }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                                @if($productionOrder->estado === 'finalizada')
+                                                    <span class="text-green-600 font-semibold">Descontado</span>
+                                                @elseif($suficiente)
+                                                    <span class="text-green-600">Disponible</span>
+                                                @else
+                                                    <span class="text-red-600 font-bold">Insuficiente</span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             @if($productionOrder->productionTimes->count() > 0)
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">

@@ -6,28 +6,26 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class StockMovement extends Model
+class ProductoMateriaPrima extends Model
 {
     use HasFactory;
 
-    const UPDATED_AT = null;
+    protected $table = 'producto_materia_prima';
+
+    public $timestamps = false;
 
     protected $fillable = [
         'product_id',
-        'paper_coil_id',
         'materia_prima_id',
-        'tipo',
-        'cantidad',
-        'referencia',
-        'referencia_id',
+        'consumo_por_unidad',
     ];
 
     protected $casts = [
-        'cantidad' => 'decimal:2',
+        'consumo_por_unidad' => 'decimal:4',
     ];
 
     /**
-     * Relación: Movimiento pertenece a un Producto
+     * Relacion: Vinculo pertenece a un Producto
      */
     public function product(): BelongsTo
     {
@@ -35,15 +33,7 @@ class StockMovement extends Model
     }
 
     /**
-     * Relación: Movimiento pertenece a una Bobina de Papel
-     */
-    public function paperCoil(): BelongsTo
-    {
-        return $this->belongsTo(PaperCoil::class);
-    }
-
-    /**
-     * Relación: Movimiento pertenece a una Materia Prima
+     * Relacion: Vinculo pertenece a una Materia Prima
      */
     public function materiaPrima(): BelongsTo
     {

@@ -45,14 +45,15 @@
 
                     @if(Auth::user()->isGestor() || Auth::user()->isOperario())
                         <!-- Gestor and Operario -->
-                        <x-nav-link :href="route('paper-coils.index')" :active="request()->routeIs('paper-coils.*')">
-                            Bobinas
+                        <x-nav-link :href="route('materias-primas.index')" :active="request()->routeIs('materias-primas.*')">
+                            Materias Primas
                         </x-nav-link>
 
                         <x-nav-link :href="route('production-orders.index')" :active="request()->routeIs('production-orders.*')">
                             Órdenes
                         </x-nav-link>
                     @endif
+
                 </div>
             </div>
 
@@ -138,14 +139,15 @@
 
             @if(Auth::user()->isGestor() || Auth::user()->isOperario())
                 <!-- Gestor and Operario -->
-                <x-responsive-nav-link :href="route('paper-coils.index')" :active="request()->routeIs('paper-coils.*')">
-                    Bobinas
+                <x-responsive-nav-link :href="route('materias-primas.index')" :active="request()->routeIs('materias-primas.*')">
+                    Materias Primas
                 </x-responsive-nav-link>
 
                 <x-responsive-nav-link :href="route('production-orders.index')" :active="request()->routeIs('production-orders.*')">
                     Órdenes
                 </x-responsive-nav-link>
             @endif
+
         </div>
 
         <!-- Responsive Settings Options -->

@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\OrderStatus;
 use App\Models\Product;
 use App\Models\ProductionOrder;
+use App\Models\StockMovement;
+use App\Services\FormulaEvaluator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ProductionOrderController extends Controller
 {
@@ -44,6 +47,59 @@ class ProductionOrderController extends Controller
             'order_status_id' => ['required', 'exists:order_status,id'],
         ]);
 
+        $product = Product::with('productoMateriasPrimas.materiaPrima')->find($validated['product_id']);
+        $cantidad = $validated['cantidad'];
+
+        // Verificar stock de materias primas antes de crear la orden
+        $materiasInsuficientes = [];
+        $maxProducible = PHP_INT_MAX;
+
+        foreach ($product->productoMateriasPrimas as $pmp) {
+            $mp = $pmp->materiaPrima;
+
+            // Re-evaluar formula para obtener consumo actualizado
+            $consumoPorUnidad = $pmp->consumo_por_unidad;
+            if ($mp->formula_consumo) {
+                $configMP = ($product->materias_config[$mp->id] ?? []);
+                try {
+                    $consumoPorUnidad = FormulaEvaluator::calcularConsumo(
+                        $mp->formula_consumo,
+                        $configMP,
+                        $mp->campos_valores ?? []
+                    );
+                } catch (\InvalidArgumentException $e) {
+                    // Si la formula falla, usar el valor almacenado
+                }
+            }
+
+            $consumoTotal = $consumoPorUnidad * $cantidad;
+            $maxConEsta = $consumoPorUnidad > 0
+                ? floor($mp->stock_actual / $consumoPorUnidad)
+                : PHP_INT_MAX;
+
+            if ($consumoTotal > $mp->stock_actual) {
+                $materiasInsuficientes[] = [
+                    'nombre' => $mp->nombre,
+                    'unidad' => $mp->unidad_consumo,
+                    'stock_actual' => $mp->stock_actual,
+                    'consumo_necesario' => round($consumoTotal, 4),
+                    'max_producible' => $maxConEsta,
+                ];
+            }
+
+            $maxProducible = min($maxProducible, $maxConEsta);
+        }
+
+        if (!empty($materiasInsuficientes)) {
+            $mensaje = 'Stock insuficiente de materias primas. ';
+            foreach ($materiasInsuficientes as $mi) {
+                $mensaje .= "{$mi['nombre']}: necesita {$mi['consumo_necesario']} {$mi['unidad']}, disponible {$mi['stock_actual']} {$mi['unidad']}. ";
+            }
+            $mensaje .= "Cantidad maxima producible: {$maxProducible} unidades.";
+
+            return back()->withInput()->withErrors(['cantidad' => $mensaje]);
+        }
+
         $validated['created_by'] = auth()->id();
 
         ProductionOrder::create($validated);
@@ -54,7 +110,7 @@ class ProductionOrderController extends Controller
 
     public function show(ProductionOrder $productionOrder)
     {
-        $productionOrder->load(['product', 'creator', 'productionTimes', 'orderStatus']);
+        $productionOrder->load(['product.productoMateriasPrimas.materiaPrima', 'creator', 'productionTimes', 'orderStatus']);
         return view('production-orders.show', compact('productionOrder'));
     }
 
@@ -127,20 +183,111 @@ class ProductionOrderController extends Controller
      */
     public function finish(ProductionOrder $productionOrder)
     {
-        if (in_array($productionOrder->estado, ['produccion', 'pausada'])) {
+        if (!in_array($productionOrder->estado, ['produccion', 'pausada'])) {
+            return redirect()->route('production-orders.show', $productionOrder)
+                ->with('error', 'La orden no puede ser finalizada en su estado actual.');
+        }
+
+        $product = $productionOrder->product;
+        $product->load('productoMateriasPrimas.materiaPrima');
+        $cantidad = $productionOrder->cantidad;
+
+        // Re-evaluar formulas y verificar stock
+        $materiasInsuficientes = [];
+        $maxProducible = PHP_INT_MAX;
+        $consumosPorMP = [];
+
+        foreach ($product->productoMateriasPrimas as $pmp) {
+            $mp = $pmp->materiaPrima;
+
+            // Re-evaluar formula para obtener consumo actualizado
+            $consumoPorUnidad = $pmp->consumo_por_unidad;
+            if ($mp->formula_consumo) {
+                $configMP = ($product->materias_config[$mp->id] ?? []);
+                try {
+                    $consumoPorUnidad = FormulaEvaluator::calcularConsumo(
+                        $mp->formula_consumo,
+                        $configMP,
+                        $mp->campos_valores ?? []
+                    );
+                } catch (\InvalidArgumentException $e) {
+                    // Si la formula falla, usar el valor almacenado
+                }
+            }
+
+            $consumoTotal = $consumoPorUnidad * $cantidad;
+            $maxConEsta = $consumoPorUnidad > 0
+                ? floor($mp->stock_actual / $consumoPorUnidad)
+                : PHP_INT_MAX;
+
+            $consumosPorMP[$pmp->id] = $consumoTotal;
+
+            if ($consumoTotal > $mp->stock_actual) {
+                $materiasInsuficientes[] = [
+                    'nombre' => $mp->nombre,
+                    'unidad' => $mp->unidad_consumo,
+                    'stock_actual' => $mp->stock_actual,
+                    'consumo_necesario' => round($consumoTotal, 4),
+                    'max_producible' => $maxConEsta,
+                ];
+            }
+
+            $maxProducible = min($maxProducible, $maxConEsta);
+        }
+
+        if (!empty($materiasInsuficientes)) {
+            $mensaje = 'No se puede finalizar: stock insuficiente de materias primas. ';
+            foreach ($materiasInsuficientes as $mi) {
+                $mensaje .= "{$mi['nombre']}: necesita {$mi['consumo_necesario']} {$mi['unidad']}, disponible {$mi['stock_actual']} {$mi['unidad']}. ";
+            }
+            $mensaje .= "Cantidad maxima producible: {$maxProducible} unidades.";
+
+            return redirect()->route('production-orders.show', $productionOrder)
+                ->with('error', $mensaje);
+        }
+
+        DB::beginTransaction();
+        try {
+            // Finalizar orden
             $productionOrder->update([
                 'estado' => 'finalizada',
                 'finished_at' => now(),
             ]);
 
             // Incrementar stock del producto
-            $productionOrder->product->increment('stock_actual', $productionOrder->cantidad);
+            $product->increment('stock_actual', $cantidad);
+
+            // Crear movimiento de stock del producto
+            StockMovement::create([
+                'product_id' => $product->id,
+                'tipo' => 'entrada',
+                'cantidad' => $cantidad,
+                'referencia' => 'production_order',
+                'referencia_id' => $productionOrder->id,
+            ]);
+
+            // Descontar materias primas con consumo re-evaluado
+            foreach ($product->productoMateriasPrimas as $pmp) {
+                $consumoTotal = $consumosPorMP[$pmp->id];
+                $pmp->materiaPrima->decrement('stock_actual', $consumoTotal);
+
+                StockMovement::create([
+                    'materia_prima_id' => $pmp->materia_prima_id,
+                    'tipo' => 'salida',
+                    'cantidad' => $consumoTotal,
+                    'referencia' => 'production_order',
+                    'referencia_id' => $productionOrder->id,
+                ]);
+            }
+
+            DB::commit();
 
             return redirect()->route('production-orders.show', $productionOrder)
-                ->with('success', 'Orden finalizada exitosamente. Stock actualizado.');
+                ->with('success', 'Orden finalizada exitosamente. Stock actualizado y materias primas descontadas.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->route('production-orders.show', $productionOrder)
+                ->with('error', 'Error al finalizar la orden: ' . $e->getMessage());
         }
-
-        return redirect()->route('production-orders.show', $productionOrder)
-            ->with('error', 'La orden no puede ser finalizada en su estado actual.');
     }
 }
